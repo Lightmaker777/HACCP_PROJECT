@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, Response, send_file
+from flask import Flask, render_template, request, redirect, url_for, session, Response, send_file, flash
 import sqlite3
 import bcrypt
 import openpyxl 
@@ -123,26 +123,36 @@ def register():
 
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
         
+        # Überprüfung der Benutzeranmeldedaten
         conn = sqlite3.connect('haccp.db')
         c = conn.cursor()
-        c.execute('SELECT password FROM users WHERE username = ?', (username,))
+        c.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password))
         user = c.fetchone()
         conn.close()
 
-        if user and check_password(user[0], password):
-            session['user'] = username
-            return redirect(url_for('index'))
+        if user:
+            session['user'] = user[0]  # Session speichern
+            return redirect(url_for('dashboard'))  # Weiter zum Dashboard
         else:
-            error = "Benutzername oder Passwort sind falsch."
-            return render_template('login.html', error=error)
+            flash("Ungültige Anmeldedaten!", "danger")
+            return render_template('login.html')
 
     return render_template('login.html')
+
+
+@app.route("/dashboard")
+def dashboard():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    
+    return render_template('dashboard.html')  # Hier wird das Dashboard angezeigt
+
 
 @app.route("/logout")
 def logout():
@@ -280,27 +290,91 @@ def confirmation():
 # Anzeige der gespeicherten Produkte
 @app.route("/produkte", methods=["GET", "POST"])
 def produkte():
-    filter_produkt = request.args.get('produkt', '')
-    filter_min_temp = request.args.get('min_temp', type=float)
-    filter_max_temp = request.args.get('max_temp', type=float)
+    if 'user' not in session:
+        return redirect(url_for('login'))
 
-    query = "SELECT * FROM produkte WHERE produkt LIKE ?"
-    params = [f'%{filter_produkt}%']
+    if request.method == "POST":
+        produkt = request.form["produkt"]
+        temperatur = float(request.form["temperatur"])
+        lagerort = request.form["lagerort"]
 
-    if filter_min_temp:
-        query += " AND temperatur >= ?"
-        params.append(filter_min_temp)
-    if filter_max_temp:
-        query += " AND temperatur <= ?"
-        params.append(filter_max_temp)
+        # Hier kannst du eine detaillierte Validierung durchführen:
+        produkt_risiko = {
+            "Fleisch": {"min_temp": 2, "max_temp": 7, "risiko": "hoch"},
+            "Milch": {"min_temp": 0, "max_temp": 4, "risiko": "hoch"},
+            "Gemüse": {"min_temp": 4, "max_temp": 12, "risiko": "mittel"},
+            "Honig": {"min_temp": -99, "max_temp": 99, "risiko": "niedrig"},
+        }
 
-    conn = sqlite3.connect('haccp.db')
-    c = conn.cursor()
-    c.execute(query, params)
-    rows = c.fetchall()
-    conn.close()
+        status = "OK"
+        risikostufe = "unbekannt"
 
-    return render_template("produkte.html", rows=rows, filter_produkt=filter_produkt, filter_min_temp=filter_min_temp, filter_max_temp=filter_max_temp)
+        if produkt in produkt_risiko:
+            limits = produkt_risiko[produkt]
+            risikostufe = limits["risiko"]
+            if temperatur < limits["min_temp"] or temperatur > limits["max_temp"]:
+                status = "WARNUNG"
+
+        # Speichern in der Datenbank
+        conn = sqlite3.connect('haccp.db')
+        c = conn.cursor()
+        c.execute('''INSERT INTO produkte (produkt, temperatur, lagerort, status, risikostufe) VALUES (?, ?, ?, ?, ?)''',
+                  (produkt, temperatur, lagerort, status, risikostufe))
+        conn.commit()
+        conn.close()
+
+        flash(f"{produkt} erfolgreich validiert!", "success")
+        return redirect(url_for('produkte'))
+
+    return render_template("produkte.html")
+
+@app.route("/produkte_validierung", methods=["GET", "POST"])
+def produkte_validierung():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    if request.method == "POST":
+        produkt = request.form["produkt"]
+        temperatur = float(request.form["temperatur"])
+        lagerort = request.form["lagerort"]
+
+        # Speichern der Daten in der Datenbank (z.B. 'produkte' Tabelle)
+        conn = sqlite3.connect('haccp.db')
+        c = conn.cursor()
+        c.execute('''INSERT INTO produkte (produkt, temperatur, lagerort) VALUES (?, ?, ?)''',
+                  (produkt, temperatur, lagerort))
+        conn.commit()
+        conn.close()
+
+        flash(f"Produkt {produkt} erfolgreich validiert!", "success")
+        return redirect(url_for('produkte_validierung'))
+
+    return render_template("produkte_validierung.html")
+
+
+@app.route("/sicherheit", methods=["GET", "POST"])
+def sicherheit():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    if request.method == "POST":
+        sicherheitsfaktor = request.form["sicherheitsfaktor"]
+        überprüfung = request.form["überprüfung"]
+
+        # Speichern der Daten in der Datenbank (z.B. 'sicherheit' Tabelle)
+        conn = sqlite3.connect('haccp.db')
+        c = conn.cursor()
+        c.execute('''INSERT INTO sicherheit (faktor, überprüfung) VALUES (?, ?)''',
+                  (sicherheitsfaktor, überprüfung))
+        conn.commit()
+        conn.close()
+
+        flash(f"Sicherheitsüberprüfung für {sicherheitsfaktor} abgeschlossen!", "success")
+        return redirect(url_for('sicherheit'))
+
+    return render_template("sicherheit.html")
+
+
 
 # Export der Daten in CSV
 @app.route("/export")
