@@ -34,11 +34,42 @@ def init_db():
             id INTEGER PRIMARY KEY,
             produkt TEXT,
             temperatur REAL,
-            lagerort TEXT
+            lagerort TEXT,
+            status TEXT,          -- NEU: z. B. "OK" oder "WARNUNG"
+            risikostufe TEXT      -- NEU: z. B. "hoch", "mittel", "niedrig"
         )
     ''')
     conn.commit()
     conn.close()
+# Überprüfe und aktualisiere die Datenbankstruktur, wenn nötig
+def update_db_schema():
+    conn = sqlite3.connect('haccp.db')
+    c = conn.cursor()
+
+    # Versuche, die 'status'-Spalte hinzuzufügen
+    try:
+        c.execute("ALTER TABLE produkte ADD COLUMN status TEXT")
+        print("Spalte 'status' wurde hinzugefügt.")
+    except sqlite3.OperationalError:
+        print("Spalte 'status' existiert bereits.")
+
+    # Versuche, die 'risikostufe'-Spalte hinzuzufügen
+    try:
+        c.execute("ALTER TABLE produkte ADD COLUMN risikostufe TEXT")
+        print("Spalte 'risikostufe' wurde hinzugefügt.")
+    except sqlite3.OperationalError:
+        print("Spalte 'risikostufe' existiert bereits.")
+
+    conn.commit()
+    conn.close()
+
+# Initialisiere die Datenbank und aktualisiere die Struktur bei jedem Start
+def initialize():
+    init_db()  # Initialisiere die Tabelle
+    update_db_schema()  # Aktualisiere die Tabelle, falls Spalten fehlen
+
+# Aufruf beim Start der Anwendung
+initialize()
 
 # Benutzer-Datenbank initialisieren und Tabelle erstellen
 def init_user_db():
@@ -98,15 +129,14 @@ def login():
         username = request.form['username']
         password = request.form['password']
         
-        # Überprüfe Benutzername und Passwort
         conn = sqlite3.connect('haccp.db')
         c = conn.cursor()
-        c.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password))
+        c.execute('SELECT password FROM users WHERE username = ?', (username,))
         user = c.fetchone()
         conn.close()
 
-        if user:
-            session['user'] = user[0]  # Beispiel: Speichern der Benutzer-ID in der Session
+        if user and check_password(user[0], password):
+            session['user'] = username
             return redirect(url_for('index'))
         else:
             error = "Benutzername oder Passwort sind falsch."
@@ -114,13 +144,6 @@ def login():
 
     return render_template('login.html')
 
-
-
-# Logout
-@app.route("/logout")
-def logout():
-    session.pop('user', None)  # Entfernen des Benutzernamens aus der Session
-    return redirect(url_for('login'))  # Weiterleitung zur Login-Seite
 
 # Authentifizierungsmiddleware
 @app.before_request
@@ -164,7 +187,6 @@ def create_default_admin():
 # Rufe die Funktion beim Start der Anwendung auf
 create_default_admin()
 
-# Startseite mit Formular zur Dateneingabe
 @app.route("/", methods=["GET", "POST"])
 def index():
     # Überprüfen, ob der Benutzer eingeloggt ist
@@ -178,33 +200,72 @@ def index():
         temperatur = float(request.form["temperatur"])
         lagerort = request.form["lagerort"]
 
-        # Erweiterte Risikobewertung
         produkt_risiko = {
-            "Fleisch": {"min_temp": 2, "max_temp": 7},
-            "Milch": {"min_temp": 0, "max_temp": 4},
-            # Weitere Produkte hinzufügen
+            "Fleisch": {"min_temp": 2, "max_temp": 7, "risiko": "hoch"},
+            "Milch": {"min_temp": 0, "max_temp": 4, "risiko": "hoch"},
+            "Gemüse": {"min_temp": 4, "max_temp": 12, "risiko": "mittel"},
+            "Honig": {"min_temp": -99, "max_temp": 99, "risiko": "niedrig"},
         }
 
-        if produkt in produkt_risiko:
-            min_temp = produkt_risiko[produkt]["min_temp"]
-            max_temp = produkt_risiko[produkt]["max_temp"]
-            if temperatur < min_temp or temperatur > max_temp:
-                return f"Warnung: Die Temperatur für {produkt} ist nicht im sicheren Bereich!"
+        status = "OK"
+        risikostufe = "unbekannt"
 
-        # Speichern der Daten in der SQLite-Datenbank
+        if produkt in produkt_risiko:
+            limits = produkt_risiko[produkt]
+            risikostufe = limits["risiko"]
+            if temperatur < limits["min_temp"] or temperatur > limits["max_temp"]:
+                status = "WARNUNG"
+
+        # Speichern des Produkts in der Datenbank
         conn = sqlite3.connect('haccp.db')
         c = conn.cursor()
         c.execute(''' 
-            INSERT INTO produkte (produkt, temperatur, lagerort) 
-            VALUES (?, ?, ?)
-        ''', (produkt, temperatur, lagerort))
+            INSERT INTO produkte (produkt, temperatur, lagerort, status, risikostufe)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (produkt, temperatur, lagerort, status, risikostufe))
         conn.commit()
         conn.close()
 
-        return f"Erfasst: {produkt}, {temperatur}°C, Lagerort: {lagerort}"
+        # Weiterleitung zur Bestätigungsseite mit den relevanten Werten als URL-Parameter
+        return redirect(url_for('confirmation', produkt=produkt, temperatur=temperatur, status=status, risikostufe=risikostufe))
 
     # Hier geben wir die HTML-Seite zurück, wenn die Anfrage eine GET-Anfrage ist
     return render_template("index.html")
+
+
+def reset_db():
+    conn = sqlite3.connect('haccp.db')
+    c = conn.cursor()
+    
+    # Lösche die existierende Tabelle, falls notwendig
+    c.execute('DROP TABLE IF EXISTS produkte')
+
+    # Erstelle die Tabelle mit den neuen Spalten
+    c.execute('''
+        CREATE TABLE produkte (
+            id INTEGER PRIMARY KEY,
+            produkt TEXT,
+            temperatur REAL,
+            lagerort TEXT,
+            status TEXT,           -- z. B. "OK" oder "WARNUNG"
+            risikostufe TEXT       -- z. B. "hoch", "mittel", "niedrig"
+        )
+    ''')
+
+    conn.commit()
+    conn.close()
+
+
+@app.route("/confirmation")
+def confirmation():
+    produkt = request.args.get('produkt')
+    temperatur = request.args.get('temperatur')
+    status = request.args.get('status')
+    risikostufe = request.args.get('risikostufe')
+
+    # Bestätigungsseite mit Bootstrap-Styling
+    return render_template("confirmation.html", produkt=produkt, temperatur=temperatur, status=status, risikostufe=risikostufe)
+
 
 
 
