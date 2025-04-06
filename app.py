@@ -128,15 +128,15 @@ def login():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        
+
         # Überprüfung der Benutzeranmeldedaten
         conn = sqlite3.connect('haccp.db')
         c = conn.cursor()
-        c.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password))
+        c.execute('SELECT username, password FROM users WHERE username = ?', (username,))
         user = c.fetchone()
         conn.close()
 
-        if user:
+        if user and check_password(user[1], password):  # Überprüfe das gehashte Passwort
             session['user'] = user[0]  # Session speichern
             return redirect(url_for('dashboard'))  # Weiter zum Dashboard
         else:
@@ -144,6 +144,7 @@ def login():
             return render_template('login.html')
 
     return render_template('login.html')
+
 
 
 @app.route("/dashboard")
@@ -251,27 +252,6 @@ def index():
     return render_template("index.html")
 
 
-def reset_db():
-    conn = sqlite3.connect('haccp.db')
-    c = conn.cursor()
-    
-    # Lösche die existierende Tabelle, falls notwendig
-    c.execute('DROP TABLE IF EXISTS produkte')
-
-    # Erstelle die Tabelle mit den neuen Spalten
-    c.execute('''
-        CREATE TABLE produkte (
-            id INTEGER PRIMARY KEY,
-            produkt TEXT,
-            temperatur REAL,
-            lagerort TEXT,
-            status TEXT,           -- z. B. "OK" oder "WARNUNG"
-            risikostufe TEXT       -- z. B. "hoch", "mittel", "niedrig"
-        )
-    ''')
-
-    conn.commit()
-    conn.close()
 
 
 @app.route("/confirmation")
@@ -293,12 +273,21 @@ def produkte():
     if 'user' not in session:
         return redirect(url_for('login'))
 
+    # Abrufen der Produkte aus der Datenbank
+    conn = sqlite3.connect('haccp.db')
+    c = conn.cursor()
+    c.execute('SELECT * FROM produkte')  # Hole alle Produkte aus der Tabelle
+    rows = c.fetchall()  # Alle Zeilen abrufen
+    conn.close()
+
+    print(rows)  # Debugging-Ausgabe
+
     if request.method == "POST":
         produkt = request.form["produkt"]
         temperatur = float(request.form["temperatur"])
         lagerort = request.form["lagerort"]
 
-        # Hier kannst du eine detaillierte Validierung durchführen:
+        # Hier kannst du eine detaillierte Validierung durchführen
         produkt_risiko = {
             "Fleisch": {"min_temp": 2, "max_temp": 7, "risiko": "hoch"},
             "Milch": {"min_temp": 0, "max_temp": 4, "risiko": "hoch"},
@@ -318,7 +307,8 @@ def produkte():
         # Speichern in der Datenbank
         conn = sqlite3.connect('haccp.db')
         c = conn.cursor()
-        c.execute('''INSERT INTO produkte (produkt, temperatur, lagerort, status, risikostufe) VALUES (?, ?, ?, ?, ?)''',
+        c.execute('''INSERT INTO produkte (produkt, temperatur, lagerort, status, risikostufe) 
+                     VALUES (?, ?, ?, ?, ?)''',
                   (produkt, temperatur, lagerort, status, risikostufe))
         conn.commit()
         conn.close()
@@ -326,7 +316,9 @@ def produkte():
         flash(f"{produkt} erfolgreich validiert!", "success")
         return redirect(url_for('produkte'))
 
-    return render_template("produkte.html")
+    # Übergebe die abgerufenen Produkt-Daten an das Template
+    return render_template("produkte.html", rows=rows)
+
 
 @app.route("/produkte_validierung", methods=["GET", "POST"])
 def produkte_validierung():
