@@ -35,12 +35,23 @@ def init_db():
             produkt TEXT,
             temperatur REAL,
             lagerort TEXT,
-            status TEXT,          -- NEU: z. B. "OK" oder "WARNUNG"
-            risikostufe TEXT      -- NEU: z. B. "hoch", "mittel", "niedrig"
+            status TEXT,          -- NEU: z. B. "OK" oder "WARNUNG"
+            risikostufe TEXT      -- NEU: z. B. "hoch", "mittel", "niedrig"
         )
     ''')
+    
+    # Erstelle die Sicherheitstabelle
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS sicherheit (
+            id INTEGER PRIMARY KEY,
+            faktor TEXT,
+            überprüfung TEXT
+        )
+    ''')
+    
     conn.commit()
     conn.close()
+
 # Überprüfe und aktualisiere die Datenbankstruktur, wenn nötig
 def update_db_schema():
     conn = sqlite3.connect('haccp.db')
@@ -63,14 +74,6 @@ def update_db_schema():
     conn.commit()
     conn.close()
 
-# Initialisiere die Datenbank und aktualisiere die Struktur bei jedem Start
-def initialize():
-    init_db()  # Initialisiere die Tabelle
-    update_db_schema()  # Aktualisiere die Tabelle, falls Spalten fehlen
-
-# Aufruf beim Start der Anwendung
-initialize()
-
 # Benutzer-Datenbank initialisieren und Tabelle erstellen
 def init_user_db():
     conn = sqlite3.connect('haccp.db')
@@ -86,9 +89,31 @@ def init_user_db():
     conn.commit()
     conn.close()
 
-# Initialisierung
-init_db()
-init_user_db()
+# Initialisierung beim Start der Anwendung
+def initialize():
+    init_db()  # Initialisiere die Tabellen
+    init_user_db()  # Initialisiere die Benutzertabelle
+    update_db_schema()  # Aktualisiere die Tabellen, falls Spalten fehlen
+    create_default_admin()  # Erstelle einen standardmäßigen Admin-Benutzer
+
+# Standard-Admin erstellen
+def create_default_admin():
+    conn = sqlite3.connect('haccp.db')
+    c = conn.cursor()
+    
+    # Überprüfe, ob bereits ein Admin-Benutzer existiert
+    c.execute('SELECT * FROM users WHERE username = "admin"')
+    if c.fetchone() is None:  # Wenn kein Admin vorhanden ist
+        hashed_password = hash_password('admin123')  # Beispiel-Passwort
+        c.execute('''
+            INSERT INTO users (username, password, role)
+            VALUES (?, ?, ?)
+        ''', ('admin', hashed_password, 'admin'))
+        conn.commit()
+    conn.close()
+
+# Aufruf beim Start der Anwendung
+initialize()
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -115,13 +140,12 @@ def register():
         conn.commit()
         conn.close()
 
+        flash("Registrierung erfolgreich! Sie können sich jetzt anmelden.", "success")
         # Weiterleitung zur Login-Seite nach erfolgreicher Registrierung
         return redirect(url_for('login'))
 
     # Rückgabe der Registrierungsseite, wenn keine POST-Anfrage vorliegt
     return render_template('register.html')
-
-
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -145,15 +169,12 @@ def login():
 
     return render_template('login.html')
 
-
-
 @app.route("/dashboard")
 def dashboard():
     if 'user' not in session:
         return redirect(url_for('login'))
     
     return render_template('dashboard.html')  # Hier wird das Dashboard angezeigt
-
 
 @app.route("/logout")
 def logout():
@@ -163,48 +184,32 @@ def logout():
     # Weiterleitung zur Login-Seite
     return redirect(url_for('login'))
 
-
 # Authentifizierungsmiddleware
 @app.before_request
 def require_login_and_admin():
-    # Überprüfe, ob der Benutzer zur Login- oder Registrierungsseite zugreift
-    if request.endpoint in ['login', 'register']:
+    # Liste der Seiten, die ohne Login zugänglich sind
+    public_routes = ['login', 'register', 'static']
+    
+    # Überprüfe, ob der Benutzer zu einer öffentlichen Seite zugreift
+    if request.endpoint in public_routes:
         return None
 
     # Wenn der Benutzer nicht eingeloggt ist, leite ihn zur Login-Seite weiter
     if 'user' not in session:
-        if request.endpoint not in ['login', 'static']:
-            return redirect(url_for('login'))
+        return redirect(url_for('login'))
     else:
         # Wenn der Benutzer eingeloggt ist, überprüfe, ob er ein Admin ist, falls erforderlich
-        conn = sqlite3.connect('haccp.db')
-        c = conn.cursor()
-        c.execute('SELECT role FROM users WHERE username = ?', (session['user'],))
-        user = c.fetchone()
-        conn.close()
+        admin_routes = ['admin_dashboard', 'admin_settings']
+        
+        if request.endpoint in admin_routes:
+            conn = sqlite3.connect('haccp.db')
+            c = conn.cursor()
+            c.execute('SELECT role FROM users WHERE username = ?', (session['user'],))
+            user = c.fetchone()
+            conn.close()
 
-        if user and user[0] != 'admin' and request.endpoint in ['admin_dashboard', 'admin_settings']:
-            return redirect(url_for('index'))
-
-
-# Standard-Admin erstellen
-def create_default_admin():
-    conn = sqlite3.connect('haccp.db')
-    c = conn.cursor()
-    
-    # Überprüfe, ob bereits ein Admin-Benutzer existiert
-    c.execute('SELECT * FROM users WHERE username = "admin"')
-    if c.fetchone() is None:  # Wenn kein Admin vorhanden ist
-        hashed_password = hash_password('admin123')  # Beispiel-Passwort
-        c.execute('''
-            INSERT INTO users (username, password, role)
-            VALUES (?, ?, ?)
-        ''', ('admin', hashed_password, 'admin'))
-        conn.commit()
-    conn.close()
-
-# Rufe die Funktion beim Start der Anwendung auf
-create_default_admin()
+            if not user or user[0] != 'admin':
+                return redirect(url_for('dashboard'))
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -251,9 +256,6 @@ def index():
     # Hier geben wir die HTML-Seite zurück, wenn die Anfrage eine GET-Anfrage ist
     return render_template("index.html")
 
-
-
-
 @app.route("/confirmation")
 def confirmation():
     produkt = request.args.get('produkt')
@@ -263,9 +265,6 @@ def confirmation():
 
     # Bestätigungsseite mit Bootstrap-Styling
     return render_template("confirmation.html", produkt=produkt, temperatur=temperatur, status=status, risikostufe=risikostufe)
-
-
-
 
 # Anzeige der gespeicherten Produkte
 @app.route("/produkte", methods=["GET", "POST"])
@@ -319,7 +318,6 @@ def produkte():
     # Übergebe die abgerufenen Produkt-Daten an das Template
     return render_template("produkte.html", rows=rows)
 
-
 @app.route("/produkte_validierung", methods=["GET", "POST"])
 def produkte_validierung():
     if 'user' not in session:
@@ -330,11 +328,29 @@ def produkte_validierung():
         temperatur = float(request.form["temperatur"])
         lagerort = request.form["lagerort"]
 
-        # Speichern der Daten in der Datenbank (z.B. 'produkte' Tabelle)
+        # Hier kannst du eine detaillierte Validierung durchführen
+        produkt_risiko = {
+            "Fleisch": {"min_temp": 2, "max_temp": 7, "risiko": "hoch"},
+            "Milch": {"min_temp": 0, "max_temp": 4, "risiko": "hoch"},
+            "Gemüse": {"min_temp": 4, "max_temp": 12, "risiko": "mittel"},
+            "Honig": {"min_temp": -99, "max_temp": 99, "risiko": "niedrig"},
+        }
+
+        status = "OK"
+        risikostufe = "unbekannt"
+
+        if produkt in produkt_risiko:
+            limits = produkt_risiko[produkt]
+            risikostufe = limits["risiko"]
+            if temperatur < limits["min_temp"] or temperatur > limits["max_temp"]:
+                status = "WARNUNG"
+
+        # Speichern der Daten in der Datenbank
         conn = sqlite3.connect('haccp.db')
         c = conn.cursor()
-        c.execute('''INSERT INTO produkte (produkt, temperatur, lagerort) VALUES (?, ?, ?)''',
-                  (produkt, temperatur, lagerort))
+        c.execute('''INSERT INTO produkte (produkt, temperatur, lagerort, status, risikostufe) 
+                     VALUES (?, ?, ?, ?, ?)''',
+                  (produkt, temperatur, lagerort, status, risikostufe))
         conn.commit()
         conn.close()
 
@@ -342,7 +358,6 @@ def produkte_validierung():
         return redirect(url_for('produkte_validierung'))
 
     return render_template("produkte_validierung.html")
-
 
 @app.route("/sicherheit", methods=["GET", "POST"])
 def sicherheit():
@@ -366,20 +381,26 @@ def sicherheit():
 
     return render_template("sicherheit.html")
 
-
-
 # Export der Daten in CSV
 @app.route("/export")
 def export_csv():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+        
     conn = sqlite3.connect('haccp.db')
     c = conn.cursor()
     c.execute('SELECT * FROM produkte')
     rows = c.fetchall()
     conn.close()
 
-    output = "ID,Produkt,Temperatur,Lagerort\n"
+    # Verbessert den CSV-Export um alle Spalten zu berücksichtigen
+    output = "ID,Produkt,Temperatur,Lagerort,Status,Risikostufe\n"
     for row in rows:
-        output += f"{row[0]},{row[1]},{row[2]},{row[3]}\n"
+        # Schützt vor Fehlern, wenn Spalten fehlen
+        rowData = []
+        for i in range(min(6, len(row))):  # Maximal 6 Spalten (ID, Produkt, Temperatur, Lagerort, Status, Risikostufe)
+            rowData.append(str(row[i] if i < len(row) else ""))
+        output += ",".join(rowData) + "\n"
 
     return Response(
         output,
@@ -390,6 +411,9 @@ def export_csv():
 # Export der Daten in Excel
 @app.route("/export_excel")
 def export_excel():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+        
     conn = sqlite3.connect('haccp.db')
     c = conn.cursor()
     c.execute('SELECT * FROM produkte')
@@ -398,10 +422,14 @@ def export_excel():
 
     wb = openpyxl.Workbook()
     ws = wb.active
-    ws.append(["ID", "Produkt", "Temperatur", "Lagerort"])
+    ws.append(["ID", "Produkt", "Temperatur", "Lagerort", "Status", "Risikostufe"])
 
     for row in rows:
-        ws.append(row)
+        # Stellt sicher, dass alle Spalten eingeschlossen werden
+        row_data = list(row)
+        while len(row_data) < 6:  # Fülle fehlende Spalten mit leeren Werten
+            row_data.append("")
+        ws.append(row_data)
 
     output = BytesIO()
     wb.save(output)
@@ -412,15 +440,30 @@ def export_excel():
 # Anzeige von Statistiken
 @app.route("/statistiken")
 def statistiken():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+        
     conn = sqlite3.connect('haccp.db')
     c = conn.cursor()
+    
+    # Durchschnittstemperatur abrufen
     c.execute('SELECT AVG(temperatur) FROM produkte')
     avg_temp = c.fetchone()[0]
+    
+    # Anzahl der Warnungen zählen
+    c.execute('SELECT COUNT(*) FROM produkte WHERE status = "WARNUNG"')
+    warning_count = c.fetchone()[0]
+    
+    # Gesamtzahl der Produkte abrufen
+    c.execute('SELECT COUNT(*) FROM produkte')
+    total_count = c.fetchone()[0]
+    
     conn.close()
-    return render_template("statistiken.html", avg_temp=avg_temp)
+    
+    return render_template("statistiken.html", 
+                          avg_temp=avg_temp, 
+                          warning_count=warning_count, 
+                          total_count=total_count)
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
-
