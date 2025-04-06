@@ -144,6 +144,14 @@ def login():
 
     return render_template('login.html')
 
+@app.route("/logout")
+def logout():
+    # Löschen der Benutzersitzung
+    session.pop('user', None)  # Entfernt den 'user' Key aus der Session
+
+    # Weiterleitung zur Login-Seite
+    return redirect(url_for('login'))
+
 
 # Authentifizierungsmiddleware
 @app.before_request
