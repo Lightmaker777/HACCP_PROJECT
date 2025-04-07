@@ -427,47 +427,55 @@
       alert("Fehler beim Speichern der Bestätigung.");
     }
 
-    // 2. PDF generieren (optional)
-const { jsPDF } = window.jspdf;
+    const { jsPDF } = window.jspdf;
 const doc = new jsPDF();
 
 // Füge das Firmenlogo (z.B. Honig/Bienen) hinzu
-const logoUrl = 'https://png.pngtree.com/png-vector/20250324/ourlarge/pngtree-cartoon-bee-and-honey-new-png-image_15855247.png'; // URL des Logos
-doc.addImage(logoUrl, 'PNG', 10, 10, 30, 30);  // Bildgröße und Position anpassen
+const logoUrl = 'https://png.pngtree.com/png-clipart/20240726/original/pngtree-cartoon-bee-holding-honey-bucket-png-image_15638141.png'; // URL des Logos
+doc.addImage(logoUrl, 'PNG', 10, 20, 40, 40);  // Bild vergrößern und Position anpassen
 
-// Setze die Schriftgröße und füge die Überschrift hinzu
+// Setze die Schriftgröße und füge die zentrierte Überschrift hinzu
 doc.setFontSize(16);
-doc.text("Bestätigung – HACCP Einweisung", 10, 40); // Überschrift etwas weiter unten
-doc.setFontSize(12);
+doc.text("Bestätigung – HACCP Anweisung", 105, 40, null, null, 'center'); // Überschrift in der Mitte
 
-// Füge die Firmeninformationen hinzu und positioniere sie weiter unten
-doc.setFontSize(10);
-doc.text("Firma: BienenHonig GmbH", 10, 50); // Firmenname
-doc.text("Kontakt: info@bienenhonig.de", 10, 55); // Kontakt E-Mail
-doc.text("Telefon: +49 123 456 7890", 10, 60); // Telefonnummer
-doc.text("Adresse: Honigstraße 12, 12345 Bienenstadt", 10, 65); // Adresse
+// Füge die Firmeninformationen hinzu und verkleinere sie
+doc.setFontSize(8);
+doc.text("Firma: Bee United UG", 10, 70); // Firmenname
+doc.text("Kontakt: info@beeunitedug.de", 10, 75); // Kontakt E-Mail
+doc.text("Telefon: +49 123 456 7890", 10, 80); // Telefonnummer
+doc.text("Adresse: Schaaffhausenstraße 2, 50769 Köln", 10, 85); // Adresse
 
-// Füge die Bestätigungsdaten hinzu, etwas weiter unten
+// Füge die Bestätigungsdaten hinzu und vergrößere die Schriftgröße
 doc.setFontSize(12);
-doc.text(`Name des Mitarbeiters: ${name}`, 10, 80);
-doc.text(`Betriebsnummer: ${id}`, 10, 90);
-doc.text(`Bestätigungsdatum: ${date}`, 10, 100);
-doc.text(`Position/Funktion: ${role}`, 10, 110);
-doc.text(`Version der Anweisung: ${version}`, 10, 120);
-doc.text(`Anweisung durchgeführt von: ${instructor}`, 10, 130);
+doc.text(`Name des Mitarbeiters: ${name}`, 10, 100);
+doc.text(`Betriebsnummer: ${id}`, 10, 110);
+doc.text(`Bestätigungsdatum: ${formatDate(date)}`, 10, 120); // Datum im EU-Format
+doc.text(`Position/Funktion: ${role}`, 10, 130);
+doc.text(`Version der Anweisung: ${version}`, 10, 140);
+doc.text(`Anweisung durchgeführt von: ${instructor}`, 10, 150);
 
 // Gelesen & verstanden Checkbox (optional)
-doc.text(`Gelesen & verstanden: Ja`, 10, 140);
+doc.text(`Gelesen & verstanden: Ja`, 10, 160);
 
 // Füge die Unterschrift hinzu
-doc.text("Unterschrift:", 10, 160);
-doc.addImage(signatureDataUrl, "PNG", 40, 150, 100, 40);  // Position der Unterschrift anpassen
+doc.text("Unterschrift:", 10, 180);
+doc.addImage(signatureDataUrl, "PNG", 40, 170, 100, 40);  // Position der Unterschrift anpassen
 
 // Speichere das PDF
 doc.save(`HACCP-Bestaetigung_${name.replace(/\s+/g, "_")}.pdf`);
 
 // Benachrichtigung
 alert("Vielen Dank! Deine Bestätigung wurde als PDF gespeichert.");
+
+// Hilfsfunktion, um das Datum im EU-Format zu formatieren (TT.MM.JJJJ)
+function formatDate(date) {
+  const dateObj = new Date(date);
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0'); // Monate sind 0-basiert
+  const year = dateObj.getFullYear();
+  return `${day}.${month}.${year}`;
+}
+
 
 
   });
