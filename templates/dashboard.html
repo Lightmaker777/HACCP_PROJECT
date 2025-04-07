@@ -1,10 +1,9 @@
-<!-- dashboard.html -->
 <!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HACCP Dashboard</title>
+  <title>HACCP Dashboard - Bee United UG</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <style>
@@ -54,7 +53,7 @@
 <body>
 
 <div class="container">
-  <h1>HACCP Dashboard</h1>
+  <h1>HACCP Dashboard - Bee United UG</h1>
 
   <!-- Navigation Menu -->
   <div class="d-flex justify-content-center flex-wrap mb-4">
@@ -63,6 +62,8 @@
     <a href="#lagerung" class="nav-link"><i class="fas fa-warehouse"></i> Lagerung Überprüfung</a>
     <a href="#risiko" class="nav-link"><i class="fas fa-exclamation-triangle"></i> Risikoanalyse</a>
     <a href="#reinigung" class="nav-link"><i class="fas fa-broom"></i> Reinigungsprotokolle</a>
+    <a href="#hygiene" class="nav-link"><i class="fas fa-user-check"></i> Hygiene und Kleidung</a>
+    <a href="#dokumente" class="nav-link"><i class="fas fa-file-alt"></i> Dokumentation</a>
   </div>
 
   <div class="row mt-4">
@@ -73,12 +74,19 @@
         <p>Validiere Produkte gemäß HACCP-Richtlinien.</p>
         <button class="btn btn-info" onclick="toggleQuiz('quiz1')">Jetzt starten</button>
         <div class="quiz" id="quiz1" style="display:none;">
-          <p><strong>Frage:</strong> Was muss bei der Produktvalidierung dokumentiert werden?</p>
+          <p><strong>Frage 1:</strong> Was muss bei der Produktvalidierung dokumentiert werden?</p>
           <label><input type="radio" name="q1" value="0"> Nur der Preis</label>
           <label><input type="radio" name="q1" value="1"> Zutaten, Herkunft und Risiken</label>
           <label><input type="radio" name="q1" value="0"> Lagerkosten</label>
           <button class="btn btn-success mt-2" id="check-q1">Antwort prüfen</button>
           <div id="result-q1" class="mt-2"></div>
+
+          <p><strong>Frage 2:</strong> Was gewährleistet die Rückverfolgbarkeit des Produkts?</p>
+          <label><input type="radio" name="q2" value="1"> Dokumentation der Herkunft und Chargennummer</label>
+          <label><input type="radio" name="q2" value="0"> Nur die Verpackung</label>
+          <label><input type="radio" name="q2" value="0"> Nur die Produktionshalle</label>
+          <button class="btn btn-success mt-2" id="check-q2">Antwort prüfen</button>
+          <div id="result-q2" class="mt-2"></div>
         </div>
       </div>
     </div>
@@ -88,14 +96,21 @@
       <div class="card dashboard-card">
         <h5><i class="fas fa-shield-alt"></i> Sicherheitsüberprüfung</h5>
         <p>Führe Audits und Sicherheitskontrollen durch.</p>
-        <button class="btn btn-info" onclick="toggleQuiz('quiz2')">Jetzt starten</button>
-        <div class="quiz" id="quiz2" style="display:none;">
-          <p><strong>Frage:</strong> Welche persönliche Schutzausrüstung ist Pflicht?</p>
-          <label><input type="radio" name="q2" value="1"> Handschuhe und Haarnetz</label>
-          <label><input type="radio" name="q2" value="0"> Sandalen</label>
-          <label><input type="radio" name="q2" value="0"> Sonnenbrille</label>
-          <button class="btn btn-success mt-2" id="check-q2">Antwort prüfen</button>
-          <div id="result-q2" class="mt-2"></div>
+        <button class="btn btn-info" onclick="toggleQuiz('quiz3')">Jetzt starten</button>
+        <div class="quiz" id="quiz3" style="display:none;">
+          <p><strong>Frage 1:</strong> Welche persönliche Schutzausrüstung ist Pflicht?</p>
+          <label><input type="radio" name="q3" value="1"> Handschuhe und Haarnetz</label>
+          <label><input type="radio" name="q3" value="0"> Sandalen</label>
+          <label><input type="radio" name="q3" value="0"> Sonnenbrille</label>
+          <button class="btn btn-success mt-2" id="check-q3">Antwort prüfen</button>
+          <div id="result-q3" class="mt-2"></div>
+
+          <p><strong>Frage 2:</strong> Wie kann der Zugang von unbefugten Personen zur Produktionsstätte verhindert werden?</p>
+          <label><input type="radio" name="q4" value="1"> Durch Zugangskontrollen und Überwachungskameras</label>
+          <label><input type="radio" name="q4" value="0"> Durch Zufallskontrollen</label>
+          <label><input type="radio" name="q4" value="0"> Durch manuelle Eingabe von Passwörtern</label>
+          <button class="btn btn-success mt-2" id="check-q4">Antwort prüfen</button>
+          <div id="result-q4" class="mt-2"></div>
         </div>
       </div>
     </div>
@@ -107,50 +122,57 @@
       <div class="card dashboard-card">
         <h5><i class="fas fa-warehouse"></i> Lagerung Überprüfung</h5>
         <p>Temperaturkontrollen und Lagerbedingungen sicherstellen.</p>
-        <button class="btn btn-info" onclick="toggleQuiz('quiz3')">Jetzt starten</button>
-        <div class="quiz" id="quiz3" style="display:none;">
-          <p><strong>Frage:</strong> Welche Temperatur ist für Kühlware korrekt?</p>
-          <label><input type="radio" name="q3" value="1"> 0–4°C</label>
-          <label><input type="radio" name="q3" value="0"> 10–12°C</label>
-          <label><input type="radio" name="q3" value="0"> Raumtemperatur</label>
-          <button class="btn btn-success mt-2" id="check-q3">Antwort prüfen</button>
-          <div id="result-q3" class="mt-2"></div>
+        <button class="btn btn-info" onclick="toggleQuiz('quiz5')">Jetzt starten</button>
+        <div class="quiz" id="quiz5" style="display:none;">
+          <p><strong>Frage 1:</strong> Welche Temperatur ist für Kühlware korrekt?</p>
+          <label><input type="radio" name="q5" value="1"> 0–4°C</label>
+          <label><input type="radio" name="q5" value="0"> 10–12°C</label>
+          <label><input type="radio" name="q5" value="0"> Raumtemperatur</label>
+          <button class="btn btn-success mt-2" id="check-q5">Antwort prüfen</button>
+          <div id="result-q5" class="mt-2"></div>
+
+          <p><strong>Frage 2:</strong> Wie wird die Lagerung des Honigs überwacht?</p>
+          <label><input type="radio" name="q6" value="1"> Durch regelmäßige Temperaturkontrollen und Dokumentation</label>
+          <label><input type="radio" name="q6" value="0"> Nur durch Visuelle Inspektion</label>
+          <label><input type="radio" name="q6" value="0"> Nur durch die Angabe auf der Verpackung</label>
+          <button class="btn btn-success mt-2" id="check-q6">Antwort prüfen</button>
+          <div id="result-q6" class="mt-2"></div>
         </div>
       </div>
     </div>
 
-    <!-- Risiko -->
-    <div class="col-md-6" id="risiko">
+    <!-- Hygiene und Kleidung -->
+    <div class="col-md-6" id="hygiene">
       <div class="card dashboard-card">
-        <h5><i class="fas fa-exclamation-triangle"></i> Risikoanalyse</h5>
-        <p>Bewerte Risiken im Produktionsprozess.</p>
-        <button class="btn btn-info" onclick="toggleQuiz('quiz4')">Jetzt starten</button>
-        <div class="quiz" id="quiz4" style="display:none;">
-          <p><strong>Frage:</strong> Was ist ein CCP?</p>
-          <label><input type="radio" name="q4" value="1"> Kritischer Kontrollpunkt</label>
-          <label><input type="radio" name="q4" value="0"> Ein Lieferant</label>
-          <label><input type="radio" name="q4" value="0"> Ein Lagerplatz</label>
-          <button class="btn btn-success mt-2" id="check-q4">Antwort prüfen</button>
-          <div id="result-q4" class="mt-2"></div>
+        <h5><i class="fas fa-user-check"></i> Hygiene und Kleidung</h5>
+        <p>Überprüfe die Einhaltung von Hygiene- und Kleidungsanforderungen.</p>
+        <button class="btn btn-info" onclick="toggleQuiz('quiz7')">Jetzt starten</button>
+        <div class="quiz" id="quiz7" style="display:none;">
+          <p><strong>Frage 1:</strong> Welche Hygieneanforderungen gelten für das Personal?</p>
+          <label><input type="radio" name="q7" value="1"> Hände waschen, Haarnetz tragen, keine Kosmetik oder Schmuck</label>
+          <label><input type="radio" name="q7" value="0"> Nur das Tragen von Handschuhen</label>
+          <label><input type="radio" name="q7" value="0"> Keine besonderen Anforderungen</label>
+          <button class="btn btn-success mt-2" id="check-q7">Antwort prüfen</button>
+          <div id="result-q7" class="mt-2"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Reinigung -->
-  <div class="row mt-4" id="reinigung">
-    <div class="col-md-6">
+  <div class="row mt-4">
+    <!-- Dokumentation -->
+    <div class="col-md-6" id="dokumente">
       <div class="card dashboard-card">
-        <h5><i class="fas fa-broom"></i> Reinigungsprotokolle</h5>
-        <p>Reinigungspläne einhalten und dokumentieren.</p>
-        <button class="btn btn-info" onclick="toggleQuiz('quiz5')">Jetzt starten</button>
-        <div class="quiz" id="quiz5" style="display:none;">
-          <p><strong>Frage:</strong> Wie oft müssen Produktionsflächen gereinigt werden?</p>
-          <label><input type="radio" name="q5" value="1"> Täglich oder nach Verschmutzung</label>
-          <label><input type="radio" name="q5" value="0"> Wöchentlich</label>
-          <label><input type="radio" name="q5" value="0"> Nur nach Beschwerden</label>
-          <button class="btn btn-success mt-2" id="check-q5">Antwort prüfen</button>
-          <div id="result-q5" class="mt-2"></div>
+        <h5><i class="fas fa-file-alt"></i> Dokumentation</h5>
+        <p>Verwalte die erforderliche Dokumentation und Aufzeichnungen für HACCP.</p>
+        <button class="btn btn-info" onclick="toggleQuiz('quiz8')">Jetzt starten</button>
+        <div class="quiz" id="quiz8" style="display:none;">
+          <p><strong>Frage 1:</strong> Welche Dokumente sind erforderlich für HACCP?</p>
+          <label><input type="radio" name="q8" value="1"> Protokolle für Reinigung, Audits und Produktprüfung</label>
+          <label><input type="radio" name="q8" value="0"> Nur die Rezeptur</label>
+          <label><input type="radio" name="q8" value="0"> Nur Lieferantenverträge</label>
+          <button class="btn btn-success mt-2" id="check-q8">Antwort prüfen</button>
+          <div id="result-q8" class="mt-2"></div>
         </div>
       </div>
     </div>
@@ -164,7 +186,6 @@
   </div>
 </div>
 
-<!-- Funktionierendes Script -->
 <script>
   function toggleQuiz(id) {
     const quiz = document.getElementById(id);
@@ -193,27 +214,30 @@
     }
   }
 
-  // Event-Listener für die Check-Buttons hinzufügen, wenn das DOM geladen ist
   document.addEventListener('DOMContentLoaded', function() {
-    // Alle Check-Buttons auswählen und Event-Listener hinzufügen
     document.getElementById('check-q1').addEventListener('click', function() {
       evaluate('q1', 'result-q1', 1);
     });
-    
     document.getElementById('check-q2').addEventListener('click', function() {
       evaluate('q2', 'result-q2', 1);
     });
-    
     document.getElementById('check-q3').addEventListener('click', function() {
       evaluate('q3', 'result-q3', 1);
     });
-    
     document.getElementById('check-q4').addEventListener('click', function() {
       evaluate('q4', 'result-q4', 1);
     });
-    
     document.getElementById('check-q5').addEventListener('click', function() {
       evaluate('q5', 'result-q5', 1);
+    });
+    document.getElementById('check-q6').addEventListener('click', function() {
+      evaluate('q6', 'result-q6', 1);
+    });
+    document.getElementById('check-q7').addEventListener('click', function() {
+      evaluate('q7', 'result-q7', 1);
+    });
+    document.getElementById('check-q8').addEventListener('click', function() {
+      evaluate('q8', 'result-q8', 1);
     });
   });
 </script>
