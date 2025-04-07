@@ -54,61 +54,62 @@
 
 <div class="container">
   <h1>HACCP Dashboard - Bee United UG</h1>
+  
 
   <!-- Navigation Menu -->
   <div class="d-flex justify-content-center flex-wrap mb-4">
-    <a href="#produkte" class="nav-link"><i class="fas fa-cogs"></i> Produkte Validierung</a>
-    <a href="#sicherheit" class="nav-link"><i class="fas fa-shield-alt"></i> Sicherheitsüberprüfung</a>
-    <a href="#lagerung" class="nav-link"><i class="fas fa-warehouse"></i> Lagerung Überprüfung</a>
-    <a href="#risiko" class="nav-link"><i class="fas fa-exclamation-triangle"></i> Risikoanalyse</a>
-    <a href="#reinigung" class="nav-link"><i class="fas fa-broom"></i> Reinigungsprotokolle</a>
+    <a href="#produkte" class="nav-link"><i class="fas fa-cogs"></i> Produktbeschreibung</a>
+    <a href="#verpackung" class="nav-link"><i class="fas fa-box"></i> Verpackung und Kontakt</a>
+    <a href="#lagerung" class="nav-link"><i class="fas fa-warehouse"></i> Lagerung des Honigs</a>
     <a href="#hygiene" class="nav-link"><i class="fas fa-user-check"></i> Hygiene und Kleidung</a>
     <a href="#dokumente" class="nav-link"><i class="fas fa-file-alt"></i> Dokumentation</a>
+    <a href="#reinigung" class="nav-link"><i class="fas fa-broom"></i> Reinigung und Wartung</a>
+    <a href="#sicherheit" class="nav-link"><i class="fas fa-shield-alt"></i> Sicherheitsvorkehrungen</a>
   </div>
 
   <div class="row mt-4">
-    <!-- Produkte -->
+    <!-- Produktbeschreibung -->
     <div class="col-md-6" id="produkte">
       <div class="card dashboard-card">
-        <h5><i class="fas fa-cogs"></i> Produkte Validierung</h5>
-        <p>Validiere Produkte gemäß HACCP-Richtlinien.</p>
+        <h5><i class="fas fa-cogs"></i> Produktbeschreibung</h5>
+        <p>Validiere die Informationen zu den Honigprodukten und deren Herkunft gemäß HACCP.</p>
         <button class="btn btn-info" onclick="toggleQuiz('quiz1')">Jetzt starten</button>
         <div class="quiz" id="quiz1" style="display:none;">
-          <p><strong>Frage 1:</strong> Was muss bei der Produktvalidierung dokumentiert werden?</p>
-          <label><input type="radio" name="q1" value="0"> Nur der Preis</label>
-          <label><input type="radio" name="q1" value="1"> Zutaten, Herkunft und Risiken</label>
-          <label><input type="radio" name="q1" value="0"> Lagerkosten</label>
+          <p><strong>Frage 1:</strong> Welche Zertifikate müssen für den Honig vorliegen?</p>
+          <label><input type="radio" name="q1" value="1"> QSI und Honigverordnung</label>
+          <label><input type="radio" name="q1" value="0"> Nur das Lieferantenzertifikat</label>
+          <label><input type="radio" name="q1" value="0"> Keine Zertifikate erforderlich</label>
           <button class="btn btn-success mt-2" id="check-q1">Antwort prüfen</button>
           <div id="result-q1" class="mt-2"></div>
 
-          <p><strong>Frage 2:</strong> Was gewährleistet die Rückverfolgbarkeit des Produkts?</p>
-          <label><input type="radio" name="q2" value="1"> Dokumentation der Herkunft und Chargennummer</label>
-          <label><input type="radio" name="q2" value="0"> Nur die Verpackung</label>
-          <label><input type="radio" name="q2" value="0"> Nur die Produktionshalle</label>
+          <p><strong>Frage 2:</strong> Wie lange ist der Honig lagerfähig?</p>
+          <label><input type="radio" name="q2" value="1"> 24 Monate</label>
+          <label><input type="radio" name="q2" value="0"> 12 Monate</label>
+          <label><input type="radio" name="q2" value="0"> 36 Monate</label>
           <button class="btn btn-success mt-2" id="check-q2">Antwort prüfen</button>
           <div id="result-q2" class="mt-2"></div>
         </div>
       </div>
     </div>
 
-    <!-- Sicherheit -->
-    <div class="col-md-6" id="sicherheit">
+    <!-- Verpackung und Kontakt mit Produkt -->
+    <div class="col-md-6" id="verpackung">
       <div class="card dashboard-card">
-        <h5><i class="fas fa-shield-alt"></i> Sicherheitsüberprüfung</h5>
-        <p>Führe Audits und Sicherheitskontrollen durch.</p>
-        <button class="btn btn-info" onclick="toggleQuiz('quiz3')">Jetzt starten</button>
-        <div class="quiz" id="quiz3" style="display:none;">
-          <p><strong>Frage 1:</strong> Welche persönliche Schutzausrüstung ist Pflicht?</p>
-          <label><input type="radio" name="q3" value="1"> Handschuhe und Haarnetz</label>
-          <label><input type="radio" name="q3" value="0"> Sandalen</label>
-          <label><input type="radio" name="q3" value="0"> Sonnenbrille</label>
+        <h5><i class="fas fa-box"></i> Verpackung und Kontakt mit Produkt</h5>
+        <p>Überprüfe die Anforderungen an Verpackungsmaterialien und deren Kontakt mit dem Honig.</p>
+        <button class="btn btn-info" onclick="toggleQuiz('quiz2')">Jetzt starten</button>
+        <div class="quiz" id="quiz2" style="display:none;">
+          <p><strong>Frage 1:</strong> Welches Material wird für die Verpackung des Honigs verwendet?</p>
+          <label><input type="radio" name="q3" value="1"> PET/AL/PE 100 µm</label>
+          <label><input type="radio" name="q3" value="0"> Glas</label>
+          <label><input type="radio" name="q3" value="0"> Papier</label>
           <button class="btn btn-success mt-2" id="check-q3">Antwort prüfen</button>
           <div id="result-q3" class="mt-2"></div>
 
-          <p><strong>Frage 2:</strong> Wie kann der Zugang von unbefugten Personen zur Produktionsstätte verhindert werden?</p>
-          <label><input type="radio" name="q4" value="1"> Durch Zugangskontrollen und Überwachungskameras</label>
-          <label><input type="radio" name="q4" value="0"> Durch Zufallskontrollen</label>
-          <label><input type="radio" name="q4" value="0"> Durch manuelle Eingabe von Passwörtern</label>
+          <p><strong>Frage 2:</strong> Welche Anforderungen gelten für den Kontakt zwischen Honig und Verpackungsmaterial?</p>
+          <label><input type="radio" name="q4" value="1"> Der innere PE-Layer darf den Honig berühren</label>
+          <label><input type="radio" name="q4" value="0"> Der Honig darf nie den Verpackungslayer berühren</label>
+          <label><input type="radio" name="q4" value="0"> Es sind keine besonderen Anforderungen nötig</label>
           <button class="btn btn-success mt-2" id="check-q4">Antwort prüfen</button>
           <div id="result-q4" class="mt-2"></div>
         </div>
@@ -117,24 +118,24 @@
   </div>
 
   <div class="row mt-4">
-    <!-- Lagerung -->
+    <!-- Lagerung des Honigs -->
     <div class="col-md-6" id="lagerung">
       <div class="card dashboard-card">
-        <h5><i class="fas fa-warehouse"></i> Lagerung Überprüfung</h5>
-        <p>Temperaturkontrollen und Lagerbedingungen sicherstellen.</p>
-        <button class="btn btn-info" onclick="toggleQuiz('quiz5')">Jetzt starten</button>
-        <div class="quiz" id="quiz5" style="display:none;">
-          <p><strong>Frage 1:</strong> Welche Temperatur ist für Kühlware korrekt?</p>
-          <label><input type="radio" name="q5" value="1"> 0–4°C</label>
-          <label><input type="radio" name="q5" value="0"> 10–12°C</label>
-          <label><input type="radio" name="q5" value="0"> Raumtemperatur</label>
+        <h5><i class="fas fa-warehouse"></i> Lagerung des Honigs</h5>
+        <p>Überprüfe die korrekten Lagerbedingungen für den Honig.</p>
+        <button class="btn btn-info" onclick="toggleQuiz('quiz3')">Jetzt starten</button>
+        <div class="quiz" id="quiz3" style="display:none;">
+          <p><strong>Frage 1:</strong> Wie lange darf der Honig im Lager aufbewahrt werden?</p>
+          <label><input type="radio" name="q5" value="1"> Maximal 5-7 Tage</label>
+          <label><input type="radio" name="q5" value="0"> 2 Wochen</label>
+          <label><input type="radio" name="q5" value="0"> 1 Monat</label>
           <button class="btn btn-success mt-2" id="check-q5">Antwort prüfen</button>
           <div id="result-q5" class="mt-2"></div>
 
-          <p><strong>Frage 2:</strong> Wie wird die Lagerung des Honigs überwacht?</p>
-          <label><input type="radio" name="q6" value="1"> Durch regelmäßige Temperaturkontrollen und Dokumentation</label>
-          <label><input type="radio" name="q6" value="0"> Nur durch Visuelle Inspektion</label>
-          <label><input type="radio" name="q6" value="0"> Nur durch die Angabe auf der Verpackung</label>
+          <p><strong>Frage 2:</strong> Welche Anforderungen gelten für die Lagerung des Honigs?</p>
+          <label><input type="radio" name="q6" value="1"> In einem sauberen und trockenen Raum</label>
+          <label><input type="radio" name="q6" value="0"> In einem offenen Lagerraum</label>
+          <label><input type="radio" name="q6" value="0"> In direkter Sonneneinstrahlung</label>
           <button class="btn btn-success mt-2" id="check-q6">Antwort prüfen</button>
           <div id="result-q6" class="mt-2"></div>
         </div>
@@ -145,13 +146,13 @@
     <div class="col-md-6" id="hygiene">
       <div class="card dashboard-card">
         <h5><i class="fas fa-user-check"></i> Hygiene und Kleidung</h5>
-        <p>Überprüfe die Einhaltung von Hygiene- und Kleidungsanforderungen.</p>
-        <button class="btn btn-info" onclick="toggleQuiz('quiz7')">Jetzt starten</button>
-        <div class="quiz" id="quiz7" style="display:none;">
-          <p><strong>Frage 1:</strong> Welche Hygieneanforderungen gelten für das Personal?</p>
-          <label><input type="radio" name="q7" value="1"> Hände waschen, Haarnetz tragen, keine Kosmetik oder Schmuck</label>
-          <label><input type="radio" name="q7" value="0"> Nur das Tragen von Handschuhen</label>
-          <label><input type="radio" name="q7" value="0"> Keine besonderen Anforderungen</label>
+        <p>Überprüfe, dass alle Hygieneregeln und Vorschriften für das Personal eingehalten werden.</p>
+        <button class="btn btn-info" onclick="toggleQuiz('quiz4')">Jetzt starten</button>
+        <div class="quiz" id="quiz4" style="display:none;">
+          <p><strong>Frage 1:</strong> Welche Hygienemaßnahmen sind für das Personal erforderlich?</p>
+          <label><input type="radio" name="q7" value="1"> Hände waschen, Haarnetz und Schutzkleidung tragen</label>
+          <label><input type="radio" name="q7" value="0"> Keine speziellen Anforderungen</label>
+          <label><input type="radio" name="q7" value="0"> Nur Handschuhe tragen</label>
           <button class="btn btn-success mt-2" id="check-q7">Antwort prüfen</button>
           <div id="result-q7" class="mt-2"></div>
         </div>
@@ -165,81 +166,63 @@
       <div class="card dashboard-card">
         <h5><i class="fas fa-file-alt"></i> Dokumentation</h5>
         <p>Verwalte die erforderliche Dokumentation und Aufzeichnungen für HACCP.</p>
-        <button class="btn btn-info" onclick="toggleQuiz('quiz8')">Jetzt starten</button>
-        <div class="quiz" id="quiz8" style="display:none;">
-          <p><strong>Frage 1:</strong> Welche Dokumente sind erforderlich für HACCP?</p>
-          <label><input type="radio" name="q8" value="1"> Protokolle für Reinigung, Audits und Produktprüfung</label>
-          <label><input type="radio" name="q8" value="0"> Nur die Rezeptur</label>
-          <label><input type="radio" name="q8" value="0"> Nur Lieferantenverträge</label>
+        <button class="btn btn-info" onclick="toggleQuiz('quiz5')">Jetzt starten</button>
+        <div class="quiz" id="quiz5" style="display:none;">
+          <p><strong>Frage 1:</strong> Welche Dokumente müssen geführt werden?</p>
+          <label><input type="radio" name="q8" value="1"> Kontroll- und Wartungsprotokolle, Zertifikate</label>
+          <label><input type="radio" name="q8" value="0"> Nur Produktionsberichte</label>
+          <label><input type="radio" name="q8" value="0"> Keine Dokumente erforderlich</label>
           <button class="btn btn-success mt-2" id="check-q8">Antwort prüfen</button>
           <div id="result-q8" class="mt-2"></div>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Logout Button -->
-  <div class="text-center mt-4">
-    <a href="/logout" class="btn btn-danger">
-      <i class="fas fa-sign-out-alt"></i> Abmelden
-    </a>
-  </div>
+<!-- Logout Button -->
+<div class="text-center mt-4">
+  <a href="/logout" class="btn btn-danger">
+    <i class="fas fa-sign-out-alt"></i> Abmelden
+  </a>
+</div>
 </div>
 
 <script>
-  function toggleQuiz(id) {
-    const quiz = document.getElementById(id);
-    quiz.style.display = quiz.style.display === 'none' ? 'block' : 'none';
-  }
-
-  function evaluate(questionName, resultId, correctAnswer) {
-    const options = document.getElementsByName(questionName);
-    let selected = null;
-    
-    for (let opt of options) {
-      if (opt.checked) {
-        selected = opt;
-        break;
-      }
-    }
-    
-    const result = document.getElementById(resultId);
-    
-    if (!selected) {
-      result.innerHTML = '<span class="text-warning">Bitte eine Antwort wählen.</span>';
-    } else if (parseInt(selected.value) === correctAnswer) {
-      result.innerHTML = '<span class="text-success">✅ Richtig!</span>';
+  // Funktion zum Umschalten der Quizzes
+  function toggleQuiz(quizId) {
+    const quiz = document.getElementById(quizId);
+    if (quiz.style.display === "none") {
+      quiz.style.display = "block";
     } else {
-      result.innerHTML = '<span class="text-danger">❌ Falsch. Bitte nochmal versuchen.</span>';
+      quiz.style.display = "none";
     }
   }
 
-  document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('check-q1').addEventListener('click', function() {
-      evaluate('q1', 'result-q1', 1);
-    });
-    document.getElementById('check-q2').addEventListener('click', function() {
-      evaluate('q2', 'result-q2', 1);
-    });
-    document.getElementById('check-q3').addEventListener('click', function() {
-      evaluate('q3', 'result-q3', 1);
-    });
-    document.getElementById('check-q4').addEventListener('click', function() {
-      evaluate('q4', 'result-q4', 1);
-    });
-    document.getElementById('check-q5').addEventListener('click', function() {
-      evaluate('q5', 'result-q5', 1);
-    });
-    document.getElementById('check-q6').addEventListener('click', function() {
-      evaluate('q6', 'result-q6', 1);
-    });
-    document.getElementById('check-q7').addEventListener('click', function() {
-      evaluate('q7', 'result-q7', 1);
-    });
-    document.getElementById('check-q8').addEventListener('click', function() {
-      evaluate('q8', 'result-q8', 1);
-    });
-  });
+  // Überprüfungsfunktion für jede Frage
+  function checkAnswer(questionId, correctAnswer) {
+    const selectedAnswer = document.querySelector(`input[name="${questionId}"]:checked`);
+    const result = document.getElementById(`result-${questionId}`);
+    if (selectedAnswer) {
+      if (selectedAnswer.value == correctAnswer) {
+        result.innerHTML = "<span style='color: green;'>Richtig!</span>";
+      } else {
+        result.innerHTML = "<span style='color: red;'>Falsch!</span>";
+      }
+    } else {
+      result.innerHTML = "<span style='color: orange;'>Bitte eine Antwort wählen.</span>";
+    }
+  }
+
+  // Check Antworten für jede Frage
+  document.getElementById('check-q1').addEventListener('click', () => checkAnswer('q1', 1));
+  document.getElementById('check-q2').addEventListener('click', () => checkAnswer('q2', 1));
+  document.getElementById('check-q3').addEventListener('click', () => checkAnswer('q3', 1));
+  document.getElementById('check-q4').addEventListener('click', () => checkAnswer('q4', 1));
+  document.getElementById('check-q5').addEventListener('click', () => checkAnswer('q5', 1));
+  document.getElementById('check-q6').addEventListener('click', () => checkAnswer('q6', 1));
+  document.getElementById('check-q7').addEventListener('click', () => checkAnswer('q7', 1));
+  document.getElementById('check-q8').addEventListener('click', () => checkAnswer('q8', 1));
 </script>
 
 </body>
