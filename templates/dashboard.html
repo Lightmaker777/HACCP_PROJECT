@@ -428,34 +428,47 @@
     }
 
     // 2. PDF generieren (optional)
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+const { jsPDF } = window.jspdf;
+const doc = new jsPDF();
 
-    // Setze die Schriftgröße und füge die Überschrift hinzu
-    doc.setFontSize(16);
-    doc.text("Bestätigung – HACCP Einweisung", 10, 20);
-    doc.setFontSize(12);
+// Füge das Firmenlogo (z.B. Honig/Bienen) hinzu
+const logoUrl = 'https://png.pngtree.com/png-vector/20250324/ourlarge/pngtree-cartoon-bee-and-honey-new-png-image_15855247.png'; // URL des Logos
+doc.addImage(logoUrl, 'PNG', 10, 10, 30, 30);  // Bildgröße und Position anpassen
 
-    // Füge die Informationen hinzu
-    doc.text(`Name des Mitarbeiters: ${name}`, 10, 40);
-    doc.text(`Betriebsnummer: ${id}`, 10, 50);
-    doc.text(`Bestätigungsdatum: ${date}`, 10, 60);
-    doc.text(`Position/Funktion: ${role}`, 10, 70);
-    doc.text(`Version der Anweisung: ${version}`, 10, 80);
-    doc.text(`Anweisung durchgeführt von: ${instructor}`, 10, 90);
+// Setze die Schriftgröße und füge die Überschrift hinzu
+doc.setFontSize(16);
+doc.text("Bestätigung – HACCP Einweisung", 10, 40); // Überschrift etwas weiter unten
+doc.setFontSize(12);
 
-    // Gelesen & verstanden Checkbox (kann optional entfernt werden, wenn nicht benötigt)
-    doc.text(`Gelesen & verstanden: Ja`, 10, 100);
+// Füge die Firmeninformationen hinzu und positioniere sie weiter unten
+doc.setFontSize(10);
+doc.text("Firma: BienenHonig GmbH", 10, 50); // Firmenname
+doc.text("Kontakt: info@bienenhonig.de", 10, 55); // Kontakt E-Mail
+doc.text("Telefon: +49 123 456 7890", 10, 60); // Telefonnummer
+doc.text("Adresse: Honigstraße 12, 12345 Bienenstadt", 10, 65); // Adresse
 
-    // Füge die Unterschrift hinzu
-    doc.text("Unterschrift:", 10, 120);
-    doc.addImage(signatureDataUrl, "PNG", 40, 110, 100, 40);
+// Füge die Bestätigungsdaten hinzu, etwas weiter unten
+doc.setFontSize(12);
+doc.text(`Name des Mitarbeiters: ${name}`, 10, 80);
+doc.text(`Betriebsnummer: ${id}`, 10, 90);
+doc.text(`Bestätigungsdatum: ${date}`, 10, 100);
+doc.text(`Position/Funktion: ${role}`, 10, 110);
+doc.text(`Version der Anweisung: ${version}`, 10, 120);
+doc.text(`Anweisung durchgeführt von: ${instructor}`, 10, 130);
 
-    // Speichere das PDF
-    doc.save(`HACCP-Bestaetigung_${name.replace(/\s+/g, "_")}.pdf`);
+// Gelesen & verstanden Checkbox (optional)
+doc.text(`Gelesen & verstanden: Ja`, 10, 140);
 
-    // Benachrichtigung
-    alert("Vielen Dank! Deine Bestätigung wurde als PDF gespeichert.");
+// Füge die Unterschrift hinzu
+doc.text("Unterschrift:", 10, 160);
+doc.addImage(signatureDataUrl, "PNG", 40, 150, 100, 40);  // Position der Unterschrift anpassen
+
+// Speichere das PDF
+doc.save(`HACCP-Bestaetigung_${name.replace(/\s+/g, "_")}.pdf`);
+
+// Benachrichtigung
+alert("Vielen Dank! Deine Bestätigung wurde als PDF gespeichert.");
+
 
   });
 </script>
