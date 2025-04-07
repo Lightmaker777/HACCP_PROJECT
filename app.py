@@ -74,8 +74,11 @@ def init_confirmation_db():
             id INTEGER PRIMARY KEY,
             employee_name TEXT,
             confirmation_date TEXT,
-            signature TEXT,  -- Diese Spalte speichert die Unterschrift
-            employee_number TEXT
+            instructor_name TEXT,
+            instruction_version TEXT,  
+            signature TEXT,
+            employee_number TEXT,
+            employee_role TEXT
         )
     ''')
     conn.commit()
@@ -299,16 +302,24 @@ def confirmation():
             confirmation_date = data['confirmation_date']
             signature_data = data['signature']
             employee_number = data['employee_number']
+            instructor_name = data['instructor_name']
+            instruction_version = data['instruction_version']
+            employee_role = data['employee_role']
 
-            # Signatur & Daten speichern
             print("Unterschrift gespeichert:", signature_data)
 
             conn = sqlite3.connect('haccp.db')
             c = conn.cursor()
             c.execute('''
-                INSERT INTO confirmations (employee_name, confirmation_date, signature, employee_number)
-                VALUES (?, ?, ?, ?)
-            ''', (employee_name, confirmation_date, signature_data, employee_number))
+                INSERT INTO confirmations (
+                    employee_name, confirmation_date, signature, employee_number,
+                    instructor_name, instruction_version, employee_role
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                employee_name, confirmation_date, signature_data, employee_number,
+                instructor_name, instruction_version, employee_role
+            ))
             conn.commit()
             conn.close()
 
@@ -316,12 +327,12 @@ def confirmation():
         else:
             return jsonify({"error": "Erwarte JSON-Daten"}), 400
 
-    # GET-Anfrage
     return render_template("confirmation.html", 
                            produkt=produkt, 
                            temperatur=temperatur, 
                            status=status, 
                            risikostufe=risikostufe)
+
 
 
 @app.route("/confirmations")

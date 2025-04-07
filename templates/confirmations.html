@@ -1,4 +1,3 @@
-<!-- confirmations.html -->
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -16,6 +15,9 @@
                 <li><strong>Name des Mitarbeiters:</strong> {{ employee_name }}</li>
                 <li><strong>Bestätigungsdatum:</strong> {{ confirmation_date }}</li>
                 <li><strong>Betriebsnummer:</strong> {{ employee_number }}</li>
+                <li><strong>Durchgeführt von:</strong> {{ instructor_name }}</li>
+                <li><strong>Version der Anweisung:</strong> {{ instruction_version }}</li>
+                <li><strong>Position/Funktion der angewiesenen Person:</strong> {{ employee_role }}</li>
             </ul>
 
             <h5>Unterschrift:</h5>
@@ -30,7 +32,6 @@
         <a href="/produkte" class="btn btn-secondary mt-3">Zur Produktübersicht</a>
     </div>
 
-    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -342,6 +342,21 @@
         <!-- Formular für Bestätigung -->
         <form id="confirmation-form">
           <div class="mb-3">
+            <label for="instructor-name" class="form-label">Durchgeführt von</label>
+            <input type="text" class="form-control" id="instructor-name" placeholder="z. B. Hygienebeauftragter" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="instruction-version" class="form-label">Version der Anweisung</label>
+            <input type="text" class="form-control" id="instruction-version" placeholder="z. B. Version 1.2, Stand 03/2024" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="employee-role" class="form-label">Position/Funktion der angewiesenen Person</label>
+            <input type="text" class="form-control" id="employee-role" placeholder="z. B. Küchenhilfe" required>
+          </div>
+          
+          <div class="mb-3">
             <label for="employee-fullname" class="form-label">Vollständiger Name des Mitarbeiters</label>
             <input type="text" class="form-control" id="employee-fullname" placeholder="Vorname Nachname" required>
           </div>
@@ -383,7 +398,9 @@
     const name = document.getElementById("employee-fullname").value;
     const id = document.getElementById("employee-id").value;
     const date = document.getElementById("confirmation-date").value;
-
+    const instructor = document.getElementById("instructor-name").value;
+    const version = document.getElementById("instruction-version").value;
+    const role = document.getElementById("employee-role").value;  
     const canvas = document.getElementById("signature-pad");
     const signatureDataUrl = canvas.toDataURL();
 
@@ -397,7 +414,10 @@
         employee_name: name,
         employee_number: id,
         confirmation_date: date,
-        signature: signatureDataUrl
+        signature: signatureDataUrl,
+        instructor_name: instructor,
+        instruction_version: version,
+        employee_role: role
       })
     });
 
@@ -411,19 +431,32 @@
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
+    // Setze die Schriftgröße und füge die Überschrift hinzu
     doc.setFontSize(16);
     doc.text("Bestätigung – HACCP Einweisung", 10, 20);
     doc.setFontSize(12);
-    doc.text(`Name: ${name}`, 10, 40);
-    doc.text(`Betriebsnummer: ${id}`, 10, 50);
-    doc.text(`Datum: ${date}`, 10, 60);
-    doc.text(`Gelesen & verstanden: Ja`, 10, 70);
-    doc.text("Unterschrift:", 10, 90);
-    doc.addImage(signatureDataUrl, "PNG", 40, 80, 100, 40);
 
+    // Füge die Informationen hinzu
+    doc.text(`Name des Mitarbeiters: ${name}`, 10, 40);
+    doc.text(`Betriebsnummer: ${id}`, 10, 50);
+    doc.text(`Bestätigungsdatum: ${date}`, 10, 60);
+    doc.text(`Position/Funktion: ${role}`, 10, 70);
+    doc.text(`Version der Anweisung: ${version}`, 10, 80);
+    doc.text(`Anweisung durchgeführt von: ${instructor}`, 10, 90);
+
+    // Gelesen & verstanden Checkbox (kann optional entfernt werden, wenn nicht benötigt)
+    doc.text(`Gelesen & verstanden: Ja`, 10, 100);
+
+    // Füge die Unterschrift hinzu
+    doc.text("Unterschrift:", 10, 120);
+    doc.addImage(signatureDataUrl, "PNG", 40, 110, 100, 40);
+
+    // Speichere das PDF
     doc.save(`HACCP-Bestaetigung_${name.replace(/\s+/g, "_")}.pdf`);
 
+    // Benachrichtigung
     alert("Vielen Dank! Deine Bestätigung wurde als PDF gespeichert.");
+
   });
 </script>
 <script>
