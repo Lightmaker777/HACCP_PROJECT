@@ -58,6 +58,13 @@
 
   <!-- Navigation Menu -->
   <div class="d-flex justify-content-center flex-wrap mb-4">
+
+    <!-- Button zum Öffnen des Modal für neue Mitarbeiter -->
+    <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#instructionModal">
+      <i class="fas fa-user-plus"></i>  Neue Mitarbeiter - Anweisungen lesen und bestätigen
+    </a>
+    
+
     <a href="#produkte" class="nav-link"><i class="fas fa-cogs"></i> Produktbeschreibung</a>
     <a href="#verpackung" class="nav-link"><i class="fas fa-box"></i> Verpackung und Kontakt</a>
     <a href="#lagerung" class="nav-link"><i class="fas fa-warehouse"></i> Lagerung des Honigs</a>
@@ -66,6 +73,7 @@
     <a href="#reinigung" class="nav-link"><i class="fas fa-broom"></i> Reinigung und Wartung</a>
     <a href="#sicherheit" class="nav-link"><i class="fas fa-shield-alt"></i> Sicherheitsvorkehrungen</a>
   </div>
+
 
   <div class="row mt-4">
     <!-- Produktbeschreibung -->
@@ -223,7 +231,262 @@
   document.getElementById('check-q6').addEventListener('click', () => checkAnswer('q6', 1));
   document.getElementById('check-q7').addEventListener('click', () => checkAnswer('q7', 1));
   document.getElementById('check-q8').addEventListener('click', () => checkAnswer('q8', 1));
+
+ // Funktion zur Bestätigung der Anweisungen im Modal
+ document.getElementById('confirmation-form').addEventListener('submit', function(event) {
+  event.preventDefault(); // Verhindert das Abschicken des Formulars, damit wir die Bestätigung anzeigen können
+
+  const employeeName = document.getElementById('employee-name').value;
+  const confirmationDate = document.getElementById('confirmation-date').value;
+  const understood = document.getElementById('understood').checked;
+
+  if (employeeName && confirmationDate && understood) {
+    // Bestätigung anzeigen
+    alert(`Vielen Dank, ${employeeName}! Ihre Bestätigung wurde für den ${confirmationDate} gespeichert.`);
+    
+    // Hier kannst du später die Funktion hinzufügen, um die Bestätigung in eine Datenbank zu speichern oder ein PDF zu erstellen.
+    
+    // Formular zurücksetzen
+    document.getElementById('confirmation-form').reset();
+
+    // Modal schließen
+    var modal = bootstrap.Modal.getInstance(document.getElementById('instructionModal'));
+    modal.hide();
+  } else {
+    alert('Bitte füllen Sie alle Felder aus und bestätigen Sie, dass Sie die Anweisungen gelesen haben.');
+  }
+});
+
+
 </script>
+
+<!-- Modal für Anweisungen -->
+<div class="modal fade" id="instructionModal" tabindex="-1" aria-labelledby="instructionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="instructionModalLabel">Anweisungen für neue Mitarbeiter – HACCP & Honigproduktion</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        <h6><strong>Willkommen!</strong></h6>
+        <p>Diese Schulung hilft dir, unsere Regeln zu verstehen. Bitte lies alle Punkte sorgfältig durch – am Ende bestätigst du, dass du sie verstanden hast.</p>
+
+        <h6><strong>1. Was ist HACCP?</strong></h6>
+        <p>HACCP ist ein Sicherheitskonzept, das hilft, Gefahren beim Umgang mit Lebensmitteln zu erkennen und zu vermeiden. In unserer Honigproduktion achten wir besonders auf:</p>
+        <ul>
+          <li>🦠 <strong>Biologische Gefahren</strong>: z. B. Bakterien oder Schimmel</li>
+          <li>🧪 <strong>Chemische Gefahren</strong>: z. B. Reinigungsmittel</li>
+          <li>🔩 <strong>Physikalische Gefahren</strong>: z. B. Metall- oder Glasstücke</li>
+        </ul>
+        <img src="https://cdn.pixabay.com/photo/2016/11/22/19/13/haccp-1853416_960_720.png" class="img-fluid rounded mb-3" alt="HACCP Prinzipien">
+
+        <h6><strong>2. Unsere Sicherheitsmaßnahmen</strong></h6>
+        <p>Wir kontrollieren besonders wichtige Schritte in der Produktion, sogenannte CCPs (Kritische Kontrollpunkte):</p>
+        <ul>
+          <li><strong>Filtration</strong>: Entfernt Fremdkörper</li>
+          <li><strong>Lagerung</strong>: Immer unter 20 °C</li>
+          <li><strong>Abfüllung</strong>: Alles muss sauber und hygienisch sein</li>
+        </ul>
+        <p><strong>Wichtige Grenzwerte:</strong></p>
+        <ul>
+          <li>Wassergehalt im Honig: max. 18 %</li>
+          <li>Lagertemperatur: konstant unter 20 °C</li>
+        </ul>
+        <img src="https://cdn.pixabay.com/photo/2019/08/06/18/13/beekeeper-4387793_960_720.jpg" class="img-fluid rounded mb-3" alt="Honigproduktion">
+
+        <h6><strong>3. Hygiene und Verhalten</strong></h6>
+        <ul>
+          <li>Trage saubere Arbeitskleidung und ein Haarnetz</li>
+          <li>Wasche und desinfiziere regelmäßig deine Hände</li>
+          <li>Keine Handys, Schmuck oder private Gegenstände im Produktionsbereich</li>
+        </ul>
+        <img src="https://cdn.pixabay.com/photo/2020/05/13/08/40/covid-19-5163131_960_720.jpg" class="img-fluid rounded mb-3" alt="Hygienevorschriften">
+
+        <h6><strong>4. Honig richtig lagern</strong></h6>
+        <ul>
+          <li>Lagere Honig in sauberen, trockenen, dunklen Räumen</li>
+          <li>Temperatur konstant halten – ideal: 14–18 °C</li>
+          <li>Honiggefäße klar beschriften (Datum & Charge)</li>
+        </ul>
+
+        <h6><strong>5. Reinigung der Geräte</strong></h6>
+        <ul>
+          <li>Reinige alle Geräte direkt nach der Benutzung</li>
+          <li>Nur zugelassene Reinigungsmittel verwenden</li>
+          <li>Dokumentiere jede Reinigung (Datum, Uhrzeit, Name)</li>
+        </ul>
+
+        <h6><strong>6. Alles dokumentieren</strong></h6>
+        <ul>
+          <li>Produktions- und Reinigungsschritte dokumentieren</li>
+          <li>Temperatur und Wassergehalt regelmäßig messen & eintragen</li>
+          <li>Checklisten vollständig und lesbar ausfüllen</li>
+        </ul>
+        <img src="https://cdn.pixabay.com/photo/2016/02/19/10/00/checklist-1209418_960_720.jpg" class="img-fluid rounded mb-3" alt="Checkliste und Dokumentation">
+
+        <h6><strong>7. Gesetze & Vorschriften</strong></h6>
+        <p>Wir halten uns an folgende Vorschriften:</p>
+        <ul>
+          <li><a href="https://www.gesetze-im-internet.de/honigv_2004/BJNR009200004.html" target="_blank">Honigverordnung (DE)</a></li>
+          <li><a href="https://de.wikipedia.org/wiki/Lebensmittelhygiene-Verordnung" target="_blank">Lebensmittelhygiene-Verordnung</a></li>
+          <li>EU-Verordnung 852/2004 – Hygiene bei Lebensmitteln</li>
+        </ul>
+
+        <hr>
+        <h6 class="mt-4"><strong>Bestätigung</strong></h6>
+        <p>Bitte fülle dieses Formular aus, um zu bestätigen, dass du alle Informationen gelesen und verstanden hast:</p>
+
+       
+        <!-- Formular für Bestätigung -->
+        <form id="confirmation-form">
+          <div class="mb-3">
+            <label for="employee-fullname" class="form-label">Vollständiger Name des Mitarbeiters</label>
+            <input type="text" class="form-control" id="employee-fullname" placeholder="Vorname Nachname" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="employee-id" class="form-label">Betriebsnummer</label>
+            <input type="text" class="form-control" id="employee-id" placeholder="z. B. 12345678" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="confirmation-date" class="form-label">Bestätigungsdatum</label>
+            <input type="date" class="form-control" id="confirmation-date" required>
+          </div>
+
+          <div class="form-check mb-3">
+            <input type="checkbox" class="form-check-input" id="understood" required>
+            <label class="form-check-label" for="understood">Ich habe die Anweisungen gelesen und verstanden.</label>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Unterschrift (mit Maus oder Finger)</label>
+            <canvas id="signature-pad" width="600" height="200" class="border" style="border: 1px solid #ccc; width: 100%;"></canvas>
+            <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="clearSignature()">Unterschrift löschen</button>
+          </div>
+          
+
+          <button type="submit" class="btn btn-success mt-3">Bestätigen</button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    document.getElementById("confirmation-form").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const name = document.getElementById("employee-fullname").value;
+    const id = document.getElementById("employee-id").value;
+    const date = document.getElementById("confirmation-date").value;
+
+    const canvas = document.getElementById("signature-pad");
+    const signatureDataUrl = canvas.toDataURL();
+
+    // 1. Sende Daten an Server
+    const response = await fetch("/confirmation", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        employee_name: name,
+        employee_number: id,
+        confirmation_date: date,
+        signature: signatureDataUrl
+      })
+    });
+
+    if (response.ok) {
+      alert("Bestätigung erfolgreich gespeichert.");
+    } else {
+      alert("Fehler beim Speichern der Bestätigung.");
+    }
+
+    // 2. PDF generieren (optional)
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFontSize(16);
+    doc.text("Bestätigung – HACCP Einweisung", 10, 20);
+    doc.setFontSize(12);
+    doc.text(`Name: ${name}`, 10, 40);
+    doc.text(`Betriebsnummer: ${id}`, 10, 50);
+    doc.text(`Datum: ${date}`, 10, 60);
+    doc.text(`Gelesen & verstanden: Ja`, 10, 70);
+    doc.text("Unterschrift:", 10, 90);
+    doc.addImage(signatureDataUrl, "PNG", 40, 80, 100, 40);
+
+    doc.save(`HACCP-Bestaetigung_${name.replace(/\s+/g, "_")}.pdf`);
+
+    alert("Vielen Dank! Deine Bestätigung wurde als PDF gespeichert.");
+  });
+</script>
+<script>
+  const canvas = document.getElementById("signature-pad");
+  const ctx = canvas.getContext("2d");
+  let drawing = false;
+
+  function getPosition(e) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: (e.clientX || e.touches[0].clientX) - rect.left,
+      y: (e.clientY || e.touches[0].clientY) - rect.top
+    };
+  }
+
+  function startDraw(e) {
+    e.preventDefault();
+    drawing = true;
+    const pos = getPosition(e);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+  }
+
+  function draw(e) {
+    if (!drawing) return;
+    e.preventDefault();
+    const pos = getPosition(e);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  function stopDraw(e) {
+    e.preventDefault();
+    drawing = false;
+  }
+
+  function clearSignature() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  // Events für Maus
+  canvas.addEventListener("mousedown", startDraw);
+  canvas.addEventListener("mousemove", draw);
+  canvas.addEventListener("mouseup", stopDraw);
+  canvas.addEventListener("mouseleave", stopDraw);
+
+  // Events für Touchgeräte
+  canvas.addEventListener("touchstart", startDraw);
+  canvas.addEventListener("touchmove", draw);
+  canvas.addEventListener("touchend", stopDraw);
+  canvas.addEventListener("touchcancel", stopDraw);
+</script>
+
+
+
+<!-- Bootstrap JS für Modal-Funktionalität -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 
 </body>
 </html>

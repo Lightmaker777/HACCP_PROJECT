@@ -18,12 +18,26 @@
             <p>Risiko: <strong>{{ risikostufe }}</strong></p>
         </div>
         
-        <form method="POST">
+        <form id="confirmation-form" method="POST">
             <div class="mb-3">
-                <label for="unterschrift" class="form-label">Unterschrift</label>
-                <input type="text" class="form-control" id="unterschrift" name="unterschrift" required>
+                <label for="employee-name" class="form-label">Name des Mitarbeiters</label>
+                <input type="text" class="form-control" id="employee-name" name="employee-name" required>
             </div>
-            <button type="submit" class="btn btn-success">Bestätigen</button>
+            <div class="mb-3">
+                <label for="confirmation-date" class="form-label">Bestätigungsdatum</label>
+                <input type="date" class="form-control" id="confirmation-date" name="confirmation-date" required>
+            </div>
+            <div class="mb-3">
+                <label for="employee-number" class="form-label">Betriebsnummer</label>
+                <input type="text" class="form-control" id="employee-number" name="employee-number" required>
+            </div>
+            <div class="mb-3">
+                <label for="signature" class="form-label">Unterschrift</label>
+                <canvas id="signature" width="400" height="150" style="border: 1px solid black;"></canvas>
+                <input type="hidden" id="signature-data" name="signature">
+                <button type="button" class="btn btn-warning mt-2" id="clear-signature">Unterschrift löschen</button>
+            </div>
+            <button type="submit" class="btn btn-success mt-3">Bestätigen</button>
         </form>
         
         <hr>
@@ -31,8 +45,37 @@
         <a href="/produkte" class="btn btn-secondary mt-3">Zur Produktübersicht</a>
     </div>
 
+    <script>
+        var canvas = document.getElementById('signature');
+        var ctx = canvas.getContext('2d');
+        var isDrawing = false;
+
+        canvas.addEventListener('mousedown', function(e) {
+            isDrawing = true;
+            ctx.moveTo(e.offsetX, e.offsetY);
+        });
+
+        canvas.addEventListener('mousemove', function(e) {
+            if (isDrawing) {
+                ctx.lineTo(e.offsetX, e.offsetY);
+                ctx.stroke();
+            }
+        });
+
+        canvas.addEventListener('mouseup', function() {
+            isDrawing = false;
+            document.getElementById('signature-data').value = canvas.toDataURL();  // Speichern der Unterschrift als Bild-URL
+        });
+
+        document.getElementById('clear-signature').addEventListener('click', function() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);  // Löscht das Unterschriftenfeld
+            document.getElementById('signature-data').value = "";  // Leert das versteckte Input-Feld
+        });
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
 
 

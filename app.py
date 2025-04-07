@@ -1,8 +1,20 @@
-from flask import Flask, render_template, request, redirect, url_for, session, Response, send_file, flash
+# app.py
+from flask import Flask, render_template, request, redirect, url_for, session, Response, send_file, flash, jsonify
 import sqlite3
 import bcrypt
 import openpyxl 
 from io import BytesIO
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+
+class Confirmation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    employee_name = db.Column(db.String(100), nullable=False)
+    confirmation_date = db.Column(db.String(10), nullable=False)
+    employee_number = db.Column(db.String(50), nullable=False)
+    signature = db.Column(db.Text, nullable=False)
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Geheimen Schlüssel für Sessions
@@ -52,6 +64,23 @@ def init_db():
     conn.commit()
     conn.close()
 
+
+# Erstelle eine Tabelle für die Bestätigungen
+def init_confirmation_db():
+    conn = sqlite3.connect('haccp.db')
+    c = conn.cursor()
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS confirmations (
+            id INTEGER PRIMARY KEY,
+            employee_name TEXT,
+            confirmation_date TEXT,
+            signature TEXT,  -- Diese Spalte speichert die Unterschrift
+            employee_number TEXT
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
 # Überprüfe und aktualisiere die Datenbankstruktur, wenn nötig
 def update_db_schema():
     conn = sqlite3.connect('haccp.db')
@@ -95,7 +124,7 @@ def initialize():
     init_user_db()  # Initialisiere die Benutzertabelle
     update_db_schema()  # Aktualisiere die Tabellen, falls Spalten fehlen
     create_default_admin()  # Erstelle einen standardmäßigen Admin-Benutzer
-
+    init_confirmation_db()  # Initialisiere die Bestätigungstabelle
 # Standard-Admin erstellen
 def create_default_admin():
     conn = sqlite3.connect('haccp.db')
@@ -256,15 +285,58 @@ def index():
     # Hier geben wir die HTML-Seite zurück, wenn die Anfrage eine GET-Anfrage ist
     return render_template("index.html")
 
-@app.route("/confirmation")
+@app.route("/confirmation", methods=["GET", "POST"])
 def confirmation():
     produkt = request.args.get('produkt')
     temperatur = request.args.get('temperatur')
     status = request.args.get('status')
     risikostufe = request.args.get('risikostufe')
 
-    # Bestätigungsseite mit Bootstrap-Styling
-    return render_template("confirmation.html", produkt=produkt, temperatur=temperatur, status=status, risikostufe=risikostufe)
+    if request.method == "POST":
+        if request.is_json:
+            data = request.get_json()
+            employee_name = data['employee_name']
+            confirmation_date = data['confirmation_date']
+            signature_data = data['signature']
+            employee_number = data['employee_number']
+
+            # Signatur & Daten speichern
+            print("Unterschrift gespeichert:", signature_data)
+
+            conn = sqlite3.connect('haccp.db')
+            c = conn.cursor()
+            c.execute('''
+                INSERT INTO confirmations (employee_name, confirmation_date, signature, employee_number)
+                VALUES (?, ?, ?, ?)
+            ''', (employee_name, confirmation_date, signature_data, employee_number))
+            conn.commit()
+            conn.close()
+
+            return jsonify({"message": "Bestätigung gespeichert"}), 200
+        else:
+            return jsonify({"error": "Erwarte JSON-Daten"}), 400
+
+    # GET-Anfrage
+    return render_template("confirmation.html", 
+                           produkt=produkt, 
+                           temperatur=temperatur, 
+                           status=status, 
+                           risikostufe=risikostufe)
+
+
+@app.route("/confirmations")
+def confirmations():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    conn = sqlite3.connect('haccp.db')
+    c = conn.cursor()
+    c.execute('SELECT * FROM confirmations')
+    rows = c.fetchall()
+    conn.close()
+
+    return render_template("confirmations.html", rows=rows)
+
 
 # Anzeige der gespeicherten Produkte
 @app.route("/produkte", methods=["GET", "POST"])
