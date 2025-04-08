@@ -430,9 +430,9 @@
     const { jsPDF } = window.jspdf;
 const doc = new jsPDF();
 
-// Füge das Firmenlogo (z.B. Honig/Bienen) hinzu
-const logoUrl = 'https://png.pngtree.com/png-clipart/20240726/original/pngtree-cartoon-bee-holding-honey-bucket-png-image_15638141.png'; // URL des Logos
-doc.addImage(logoUrl, 'PNG', 10, 20, 40, 40);  // Bild vergrößern und Position anpassen
+// Füge das Firmenlogo (lokale Datei) hinzu
+const logoUrl = '/images/logo.jpg';  // Der Pfad zur Logo-Datei
+doc.addImage(logoUrl, 'JPEG', 10, 20, 40, 40);  // Position und Größe anpassen
 
 // Setze die Schriftgröße und füge die zentrierte Überschrift hinzu
 doc.setFontSize(16);
