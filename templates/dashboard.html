@@ -431,35 +431,60 @@
 const doc = new jsPDF();
 
 // Füge das Firmenlogo (lokale Datei) hinzu
-const logoUrl = '/images/logo.jpg';  // Der Pfad zur Logo-Datei
-doc.addImage(logoUrl, 'JPEG', 10, 20, 40, 40);  // Position und Größe anpassen
-
-// Setze die Schriftgröße und füge die zentrierte Überschrift hinzu
-doc.setFontSize(16);
-doc.text("Bestätigung – HACCP Anweisung", 105, 40, null, null, 'center'); // Überschrift in der Mitte
+const logoUrl = '/static/images/logo.jpg';  // Der Pfad zur Logo-Datei
+doc.addImage(logoUrl, 'JPEG', 10, 10, 80, 33);  // Kleineres Logo in der oberen linken Ecke
 
 // Füge die Firmeninformationen hinzu und verkleinere sie
+doc.setFontSize(9);
+doc.text("Firma: Bee United UG", 130, 15); // Rechts neben dem Logo
+doc.text("Kontakt: info@beeunitedug.de", 130, 22); 
+doc.text("Telefon: +49 123 456 7890", 130, 29); 
+doc.text("Adresse: Schaaffhausenstraße 2, 50769 Köln", 130, 36); 
+
+// Horizontale Linie unter dem Logo und Firmeninformationen
+doc.setDrawColor(0);
+doc.setLineWidth(0.5);
+doc.line(10, 45, 200, 45);
+
+// Setze die Schriftgröße und füge die zentrierte Überschrift UNTER dem Logo und Kontaktdaten
+doc.setFontSize(18);
+doc.text("Bestätigung – HACCP Anweisung", 105, 60, null, null, 'center'); 
+
+// Datum und Dokumenteninformation rechts
 doc.setFontSize(8);
-doc.text("Firma: Bee United UG", 10, 70); // Firmenname
-doc.text("Kontakt: info@beeunitedug.de", 10, 75); // Kontakt E-Mail
-doc.text("Telefon: +49 123 456 7890", 10, 80); // Telefonnummer
-doc.text("Adresse: Schaaffhausenstraße 2, 50769 Köln", 10, 85); // Adresse
+doc.text(`Datum: ${formatDate(new Date())}`, 170, 75);
 
-// Füge die Bestätigungsdaten hinzu und vergrößere die Schriftgröße
-doc.setFontSize(12);
-doc.text(`Name des Mitarbeiters: ${name}`, 10, 100);
-doc.text(`Betriebsnummer: ${id}`, 10, 110);
-doc.text(`Bestätigungsdatum: ${formatDate(date)}`, 10, 120); // Datum im EU-Format
-doc.text(`Position/Funktion: ${role}`, 10, 130);
-doc.text(`Version der Anweisung: ${version}`, 10, 140);
-doc.text(`Anweisung durchgeführt von: ${instructor}`, 10, 150);
+// Füge die Bestätigungsdaten hinzu
+doc.setFontSize(11);
+doc.text("Personendaten:", 10, 85);
+doc.setFontSize(10);
+doc.text(`Name des Mitarbeiters: ${name}`, 20, 95);
+doc.text(`Betriebsnummer: ${id}`, 20, 105);
+doc.text(`Position/Funktion: ${role}`, 20, 115);
 
-// Gelesen & verstanden Checkbox (optional)
-doc.text(`Gelesen & verstanden: Ja`, 10, 160);
+// HACCP Details
+doc.setFontSize(11);
+doc.text("Anweisungsdetails:", 10, 135);
+doc.setFontSize(10);
+doc.text(`Bestätigungsdatum: ${formatDate(date)}`, 20, 145);
+doc.text(`Version der Anweisung: ${version}`, 20, 155);
+doc.text(`Anweisung durchgeführt von: ${instructor}`, 20, 165);
 
-// Füge die Unterschrift hinzu
-doc.text("Unterschrift:", 10, 180);
-doc.addImage(signatureDataUrl, "PNG", 40, 170, 100, 40);  // Position der Unterschrift anpassen
+// Bestätigungsbereich
+doc.setFontSize(11);
+doc.text("Bestätigung:", 10, 185);
+doc.setFontSize(10);
+doc.text(`Gelesen & verstanden: ☑ Ja`, 20, 195);
+
+// Unterschriftsbereich
+doc.text("Unterschrift:", 10, 215);
+doc.addImage(signatureDataUrl, "PNG", 20, 220, 90, 30);  // Position angepasst
+
+// Fußzeile
+doc.setFontSize(8);
+doc.setTextColor(100, 100, 100); // Grauer Text
+doc.text("Dieses Dokument wurde elektronisch erstellt und benötigt keine physische Unterschrift zur Gültigkeit.", 105, 260, null, null, 'center');
+doc.text("© Bee United UG | HACCP-Dokumentation", 105, 270, null, null, 'center');
 
 // Speichere das PDF
 doc.save(`HACCP-Bestaetigung_${name.replace(/\s+/g, "_")}.pdf`);

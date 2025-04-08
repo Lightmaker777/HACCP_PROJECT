@@ -18,6 +18,7 @@ class Confirmation(db.Model):
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Geheimen Schlüssel für Sessions
+app.static_folder = 'static'
 
 # Passwort-Hashing und Überprüfung
 def hash_password(password):
