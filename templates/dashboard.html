@@ -267,136 +267,162 @@
 
 </script>
 
-<!-- Modal für Anweisungen -->
-<div class="modal fade" id="instructionModal" tabindex="-1" aria-labelledby="instructionModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="instructionModalLabel">Anweisungen für neue Mitarbeiter – HACCP & Honigproduktion</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
 
-        <h6><strong>Willkommen!</strong></h6>
-        <p>Diese Schulung hilft dir, unsere Regeln zu verstehen. Bitte lies alle Punkte sorgfältig durch – am Ende bestätigst du, dass du sie verstanden hast.</p>
-
-        <h6><strong>1. Was ist HACCP?</strong></h6>
-        <p>HACCP ist ein Sicherheitskonzept, das hilft, Gefahren beim Umgang mit Lebensmitteln zu erkennen und zu vermeiden. In unserer Honigproduktion achten wir besonders auf:</p>
-        <ul>
-          <li>🦠 <strong>Biologische Gefahren</strong>: z. B. Bakterien oder Schimmel</li>
-          <li>🧪 <strong>Chemische Gefahren</strong>: z. B. Reinigungsmittel</li>
-          <li>🔩 <strong>Physikalische Gefahren</strong>: z. B. Metall- oder Glasstücke</li>
-        </ul>
-        <img src="https://cdn.pixabay.com/photo/2016/11/22/19/13/haccp-1853416_960_720.png" class="img-fluid rounded mb-3" alt="HACCP Prinzipien">
-
-        <h6><strong>2. Unsere Sicherheitsmaßnahmen</strong></h6>
-        <p>Wir kontrollieren besonders wichtige Schritte in der Produktion, sogenannte CCPs (Kritische Kontrollpunkte):</p>
-        <ul>
-          <li><strong>Filtration</strong>: Entfernt Fremdkörper</li>
-          <li><strong>Lagerung</strong>: Immer unter 20 °C</li>
-          <li><strong>Abfüllung</strong>: Alles muss sauber und hygienisch sein</li>
-        </ul>
-        <p><strong>Wichtige Grenzwerte:</strong></p>
-        <ul>
-          <li>Wassergehalt im Honig: max. 18 %</li>
-          <li>Lagertemperatur: konstant unter 20 °C</li>
-        </ul>
-        <img src="https://cdn.pixabay.com/photo/2019/08/06/18/13/beekeeper-4387793_960_720.jpg" class="img-fluid rounded mb-3" alt="Honigproduktion">
-
-        <h6><strong>3. Hygiene und Verhalten</strong></h6>
-        <ul>
-          <li>Trage saubere Arbeitskleidung und ein Haarnetz</li>
-          <li>Wasche und desinfiziere regelmäßig deine Hände</li>
-          <li>Keine Handys, Schmuck oder private Gegenstände im Produktionsbereich</li>
-        </ul>
-        <img src="https://cdn.pixabay.com/photo/2020/05/13/08/40/covid-19-5163131_960_720.jpg" class="img-fluid rounded mb-3" alt="Hygienevorschriften">
-
-        <h6><strong>4. Honig richtig lagern</strong></h6>
-        <ul>
-          <li>Lagere Honig in sauberen, trockenen, dunklen Räumen</li>
-          <li>Temperatur konstant halten – ideal: 14–18 °C</li>
-          <li>Honiggefäße klar beschriften (Datum & Charge)</li>
-        </ul>
-
-        <h6><strong>5. Reinigung der Geräte</strong></h6>
-        <ul>
-          <li>Reinige alle Geräte direkt nach der Benutzung</li>
-          <li>Nur zugelassene Reinigungsmittel verwenden</li>
-          <li>Dokumentiere jede Reinigung (Datum, Uhrzeit, Name)</li>
-        </ul>
-
-        <h6><strong>6. Alles dokumentieren</strong></h6>
-        <ul>
-          <li>Produktions- und Reinigungsschritte dokumentieren</li>
-          <li>Temperatur und Wassergehalt regelmäßig messen & eintragen</li>
-          <li>Checklisten vollständig und lesbar ausfüllen</li>
-        </ul>
-        <img src="https://cdn.pixabay.com/photo/2016/02/19/10/00/checklist-1209418_960_720.jpg" class="img-fluid rounded mb-3" alt="Checkliste und Dokumentation">
-
-        <h6><strong>7. Gesetze & Vorschriften</strong></h6>
-        <p>Wir halten uns an folgende Vorschriften:</p>
-        <ul>
-          <li><a href="https://www.gesetze-im-internet.de/honigv_2004/BJNR009200004.html" target="_blank">Honigverordnung (DE)</a></li>
-          <li><a href="https://de.wikipedia.org/wiki/Lebensmittelhygiene-Verordnung" target="_blank">Lebensmittelhygiene-Verordnung</a></li>
-          <li>EU-Verordnung 852/2004 – Hygiene bei Lebensmitteln</li>
-        </ul>
-
-        <hr>
-        <h6 class="mt-4"><strong>Bestätigung</strong></h6>
-        <p>Bitte fülle dieses Formular aus, um zu bestätigen, dass du alle Informationen gelesen und verstanden hast:</p>
-
-       
-        <!-- Formular für Bestätigung -->
-        <form id="confirmation-form">
-          <div class="mb-3">
-            <label for="instructor-name" class="form-label">Durchgeführt von</label>
-            <input type="text" class="form-control" id="instructor-name" placeholder="z. B. Hygienebeauftragter" required>
-          </div>
-          
-          <div class="mb-3">
-            <label for="instruction-version" class="form-label">Version der Anweisung</label>
-            <input type="text" class="form-control" id="instruction-version" placeholder="z. B. Version 1.2, Stand 03/2024" required>
-          </div>
-          
-          <div class="mb-3">
-            <label for="employee-role" class="form-label">Position/Funktion der angewiesenen Person</label>
-            <input type="text" class="form-control" id="employee-role" placeholder="z. B. Küchenhilfe" required>
-          </div>
-          
-          <div class="mb-3">
-            <label for="employee-fullname" class="form-label">Vollständiger Name des Mitarbeiters</label>
-            <input type="text" class="form-control" id="employee-fullname" placeholder="Vorname Nachname" required>
-          </div>
-
-          <div class="mb-3">
-            <label for="employee-id" class="form-label">Betriebsnummer</label>
-            <input type="text" class="form-control" id="employee-id" placeholder="z. B. 12345678" required>
-          </div>
-
-          <div class="mb-3">
-            <label for="confirmation-date" class="form-label">Bestätigungsdatum</label>
-            <input type="date" class="form-control" id="confirmation-date" required>
-          </div>
-
-          <div class="form-check mb-3">
-            <input type="checkbox" class="form-check-input" id="understood" required>
-            <label class="form-check-label" for="understood">Ich habe die Anweisungen gelesen und verstanden.</label>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Unterschrift (mit Maus oder Finger)</label>
-            <canvas id="signature-pad" width="600" height="200" class="border" style="border: 1px solid #ccc; width: 100%;"></canvas>
-            <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="clearSignature()">Unterschrift löschen</button>
-          </div>
-          
-
-          <button type="submit" class="btn btn-success mt-3">Bestätigen</button>
-        </form>
-
+  <div class="modal fade" id="instructionModal" tabindex="-1" aria-labelledby="instructionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="instructionModalLabel">Anweisungen für neue Mitarbeiter – HACCP & Honigproduktion</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+  
+          <h6><strong>🏭 Einführung in HACCP & Honigproduktion</strong></h6>
+          <p>HACCP hilft uns, gesundheitsschädliche oder minderwertige Produkte zu vermeiden. Wir handeln präventiv, bevor etwas schiefläuft.</p>
+  
+          <h6><strong>🧼 1. Persönliche Hygienevorschriften</strong></h6>
+          <p>Bevor du den Produktionsbereich betrittst:</p>
+          <ul>
+            <li>✅ Hände gründlich waschen und desinfizieren</li>
+            <li>✅ Keine Uhren, Ringe oder Schmuck</li>
+            <li>✅ Saubere Arbeitskleidung tragen (wird gestellt)</li>
+            <li>✅ Haarnetz und ggf. Bartschutz tragen</li>
+            <li>✅ Kein starkes Parfum, Make-up o.ä.</li>
+            <li>✅ Keine Krankheitssymptome (Erkältung, Durchfall, offene Wunden)</li>
+          </ul>
+          <p><strong>❗ Meldepflicht:</strong> Bei Krankheit oder Auffälligkeiten (z.B. Bruch von Glas) sofort melden!</p>
+  
+          <h6><strong>🚪 2. Zutritt zur Produktionsstätte</strong></h6>
+          <ul>
+            <li>🔒 Nur autorisiertes Personal darf rein</li>
+            <li>👣 Fußdesinfektionsmatten benutzen</li>
+            <li>🧯 Sicherheitsunterweisung beachten (Fluchtwege, Feuerlöscher etc.)</li>
+          </ul>
+  
+          <h6><strong>🍯 3. Umgang mit Rohhonig und Materialien</strong></h6>
+          <h6>A. Rohhonigannahme:</h6>
+          <ul>
+            <li>Temperatur & Feuchtigkeit prüfen</li>
+            <li>Sensorische Kontrolle: Farbe, Geruch</li>
+            <li>Protokollieren: Charge, Lieferant, Datum</li>
+          </ul>
+          <h6>B. Lagerung:</h6>
+          <ul>
+            <li>Trocken, dunkel, bei ca. 15–20 °C</li>
+            <li>Kein Kontakt zu Reinigungsmitteln oder Fremdgerüchen</li>
+          </ul>
+  
+          <h6><strong>🔥 4. Kritische Kontrollpunkte (CCP) in der Produktion</strong></h6>
+          <h6>CCP1: Filtration / Siebung:</h6>
+          <ul>
+            <li>Entfernt Wachspartikel, Bienenreste etc.</li>
+            <li>Temperatur < 40 °C (Enzyme im Honig sind hitzeempfindlich)</li>
+            <li>Siebe regelmäßig reinigen & auf Schäden prüfen</li>
+          </ul>
+          <h6>CCP2: Abfüllung:</h6>
+          <ul>
+            <li>Keine Fremdkörper (Glassplitter, Dichtungsrückstände etc.)</li>
+            <li>Hygienisch einwandfreie Behälter benutzen</li>
+            <li>Waagen kalibriert? Füllmenge prüfen!</li>
+          </ul>
+          <h6>CCP3: Etikettierung:</h6>
+          <ul>
+            <li>Korrekte Produktinfos (Sortenname, MHD, Ursprungsland)</li>
+            <li>Rückverfolgbarkeit gewährleisten (Chargennummer muss drauf!)</li>
+          </ul>
+  
+          <h6><strong>🧽 5. Reinigung & Desinfektion (Reinigungsplan)</strong></h6>
+          <ul>
+            <li>Täglich: Oberflächen, Arbeitsgeräte, Böden</li>
+            <li>Wöchentlich: Maschinen gründlich reinigen</li>
+            <li>Dokumentieren, was, wann, womit gereinigt wurde</li>
+            <li>Nur freigegebene Reinigungsmittel verwenden (nicht in Kontakt mit Honig!)</li>
+          </ul>
+  
+          <h6><strong>📄 6. Dokumentation (dein bester Freund)</strong></h6>
+          <p>Du musst alles, was mit Sicherheit zu tun hat, dokumentieren:</p>
+          <ul>
+            <li>Temperaturprotokolle</li>
+            <li>Reinigungstagebuch</li>
+            <li>Rohstoffeingang / -freigabe</li>
+            <li>Störungen oder Zwischenfälle</li>
+            <li>Wartungs- und Kalibrierpläne</li>
+          </ul>
+          <p><strong>Merke:</strong> „Was nicht dokumentiert ist, gilt als nicht gemacht.“</p>
+  
+          <h6><strong>🚨 7. Was tun bei Problemen?</strong></h6>
+          <p>Wenn du bemerkst, dass:</p>
+          <ul>
+            <li>Ein Produkt verdorben sein könnte</li>
+            <li>Du etwas Ungewöhnliches siehst (z. B. Schimmel, Fremdkörper)</li>
+            <li>Eine Maschine defekt ist</li>
+          </ul>
+          <p><strong>👉 SOFORT STOPPEN</strong> und Schichtleiter / Qualitätsbeauftragten informieren!</p>
+  
+          <h6><strong>🐝 8. Extra: Besondere Risiken in der Honigproduktion</strong></h6>
+          <ul>
+            <li>Antibiotikarückstände im Importhonig</li>
+            <li>Kristallisation falsch gelagerter Produkte</li>
+            <li>Verwechslung von Sorten</li>
+            <li>Ungewollte Fermentation (zu hoher Wassergehalt)</li>
+          </ul>
+  
+          <hr>
+          <h6 class="mt-4"><strong>Bestätigung</strong></h6>
+          <p>Bitte fülle dieses Formular aus, um zu bestätigen, dass du alle Informationen gelesen und verstanden hast:</p>
+  
+          <!-- Formular für Bestätigung -->
+          <form id="confirmation-form">
+            <div class="mb-3">
+              <label for="instructor-name" class="form-label">Durchgeführt von</label>
+              <input type="text" class="form-control" id="instructor-name" placeholder="z. B. Hygienebeauftragter" required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="instruction-version" class="form-label">Version der Anweisung</label>
+              <input type="text" class="form-control" id="instruction-version" placeholder="z. B. Version 1.2, Stand 03/2024" required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="employee-role" class="form-label">Position/Funktion der angewiesenen Person</label>
+              <input type="text" class="form-control" id="employee-role" placeholder="z. B. Produktionsmitarbeiter" required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="employee-fullname" class="form-label">Vollständiger Name des Mitarbeiters</label>
+              <input type="text" class="form-control" id="employee-fullname" placeholder="Vorname Nachname" required>
+            </div>
+  
+            <div class="mb-3">
+              <label for="employee-id" class="form-label">Betriebsnummer</label>
+              <input type="text" class="form-control" id="employee-id" placeholder="z. B. 12345678" required>
+            </div>
+  
+            <div class="mb-3">
+              <label for="confirmation-date" class="form-label">Bestätigungsdatum</label>
+              <input type="date" class="form-control" id="confirmation-date" required>
+            </div>
+  
+            <div class="form-check mb-3">
+              <input type="checkbox" class="form-check-input" id="understood" required>
+              <label class="form-check-label" for="understood">Ich habe die Anweisungen gelesen und verstanden.</label>
+            </div>
+  
+            <div class="mb-3">
+              <label class="form-label">Unterschrift (mit Maus oder Finger)</label>
+              <canvas id="signature-pad" width="600" height="200" class="border" style="border: 1px solid #ccc; width: 100%;"></canvas>
+              <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="clearSignature()">Unterschrift löschen</button>
+            </div>
+  
+            <button type="submit" class="btn btn-success mt-3">Bestätigen</button>
+          </form>
+  
+        </div>
       </div>
     </div>
   </div>
-</div>
+  
+  
 
 <script>
     document.getElementById("confirmation-form").addEventListener("submit", async function(e) {
