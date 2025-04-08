@@ -252,33 +252,66 @@
 </div>
 
 <script>
-  // Quiz ein-/ausblenden
+  // Fortschritt und Punkte
+  let quizScore = 0;
+  let totalQuestions = 0;
+  let answeredQuestions = new Set();
+
   function toggleQuiz(id) {
     const quiz = document.getElementById(id);
     quiz.style.display = quiz.style.display === "none" ? "block" : "none";
   }
 
-  // Antworten prüfen
+  // Punkte prüfen und ausgeben
   document.querySelectorAll('[id^="check-q"]').forEach(button => {
     button.addEventListener("click", () => {
-      const quizId = button.id.split("-")[1]; // z.B. "q1"
-      const radios = document.querySelectorAll(`input[name="${quizId}"]`);
-      const resultDiv = document.getElementById(`result-${quizId}`);
-      let correct = false;
+      const qId = button.id.split("-")[1]; // z.B. q1
+      const radios = document.querySelectorAll(`input[name="${qId}"]`);
+      const resultDiv = document.getElementById(`result-${qId}`);
 
+      if (answeredQuestions.has(qId)) {
+        resultDiv.innerHTML = '<span class="text-warning">⚠️ Diese Frage wurde bereits beantwortet.</span>';
+        return;
+      }
+
+      let correct = false;
       radios.forEach(radio => {
-        if (radio.checked && radio.value === "1") {
-          correct = true;
-        }
+        if (radio.checked && radio.value === "1") correct = true;
       });
 
+      totalQuestions++;
+      answeredQuestions.add(qId);
+
       if (correct) {
+        quizScore++;
         resultDiv.innerHTML = '<span class="text-success">✅ Richtig!</span>';
       } else {
-        resultDiv.innerHTML = '<span class="text-danger">❌ Leider falsch. Versuch’s nochmal!</span>';
+        resultDiv.innerHTML = '<span class="text-danger">❌ Falsch.</span>';
       }
+
+      checkCompletion();
     });
   });
+
+  function checkCompletion() {
+    const totalExpected = document.querySelectorAll('[id^="check-q"]').length;
+    if (answeredQuestions.size === totalExpected) {
+      showFinalScore();
+    }
+  }
+
+  function showFinalScore() {
+    const msg = `
+      <div class="alert alert-info mt-4">
+        <h5>🎉 Quiz abgeschlossen!</h5>
+        <p>Du hast <strong>${quizScore}</strong> von <strong>${totalQuestions}</strong> Fragen richtig beantwortet.</p>
+        ${quizScore === totalQuestions ? "<p class='text-success'>Perfekt! 🏆</p>" : "<p>Gut gemacht! 💪</p>"}
+      </div>
+    `;
+    const feedbackContainer = document.createElement("div");
+    feedbackContainer.innerHTML = msg;
+    document.body.appendChild(feedbackContainer);
+  }
 
   // Check Antworten für jede Frage
   document.getElementById('check-q1').addEventListener('click', () => checkAnswer('q1', 1));
