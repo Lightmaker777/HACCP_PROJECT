@@ -81,6 +81,68 @@ Sicherstellung der Lebensmittelsicherheit durch systematische Erkennung, Bewertu
 
 ---
 
+# HACCP Dashboard - Bee United UG
+
+Dies ist ein Dashboard für die HACCP-Schulung und -Dokumentation für die Bee United UG, das von neuen Mitarbeitern genutzt wird, um sich mit den Sicherheitsvorkehrungen und Prozessen in der Honigproduktion vertraut zu machen.
+
+## Inhaltsverzeichnis
+
+- [Überblick](#überblick)
+- [Funktionsweise](#funktionsweise)
+- [Installation](#installation)
+- [Verwendung](#verwendung)
+- [Technologien](#technologien)
+- [Mitwirkende](#mitwirkende)
+
+## Überblick
+
+Dieses Dashboard ist für die Erstellung und Verwaltung von HACCP-Dokumentationen konzipiert. Neue Mitarbeiter können wichtige Sicherheitsanweisungen lesen und bestätigen. Das Dashboard ermöglicht es, die HACCP-Prozesse in mehreren Bereichen zu verstehen und Wissen durch interaktive Quizfragen zu überprüfen.
+
+Das Dashboard umfasst:
+- **Navigation** für verschiedene Bereiche (z.B. Produktbeschreibung, Hygiene, Dokumentation).
+- **Quiz-Mechanismus**, um das Wissen zu prüfen.
+- **PDF-Generierung**, um eine Bestätigung der Anweisungen für die zukünftige Referenz zu speichern.
+
+## Funktionsweise
+
+- **Modale Bestätigung**: Neue Mitarbeiter müssen Anweisungen lesen und diese bestätigen, bevor sie fortfahren können.
+- **Quiz-Fragen**: Nach jedem Bereich können Mitarbeiter Quizfragen beantworten, um sicherzustellen, dass sie die Informationen verstanden haben.
+- **Signaturfeld**: Mitarbeiter können ihre Bestätigung mit einer digitalen Signatur versehen.
+- **PDF-Erstellung**: Nach der Bestätigung wird eine PDF-Datei erstellt, die die bestätigten Informationen enthält, einschließlich der Unterschrift.
+
+### Beispiele von Funktionen:
+
+1. **Modal zum Bestätigen von Anweisungen**
+    - Öffnet ein Modal mit einer Bestätigung und einem Unterschriftenfeld.
+  
+2. **Quizfragen**
+    - Jede Kategorie (z. B. Hygiene, Verpackung) hat relevante Quizfragen, die der Benutzer beantworten muss.
+  
+3. **PDF-Erstellung** 
+    - Erzeugt eine PDF mit den bestätigten Anweisungen und Unterschriften.
+
+---
+
+## Verwendung
+
+- **Navigieren**: Die Benutzer können durch das Dashboard navigieren, indem sie auf die verschiedenen Links im Menü klicken.
+- **Anweisungen bestätigen**: Sobald der Benutzer die Anweisungen gelesen hat, kann er auf den Button „Anweisungen bestätigen“ klicken.
+- **Quiz beantworten**: Der Benutzer kann Quizfragen beantworten und auf „Antwort prüfen“ klicken, um zu sehen, ob die Antwort korrekt ist.
+- **Signieren**: Im Modal kann der Benutzer seine Unterschrift auf dem `canvas`-Element hinterlassen, um die Bestätigung zu speichern.
+- **PDF generieren**: Nach der Bestätigung wird automatisch eine PDF-Datei erzeugt, die die Bestätigung und Unterschrift enthält.
+
+## Technologien
+
+Das Dashboard nutzt die folgenden Technologien:
+
+- **HTML/CSS**: Für die Struktur und das Design der Seite.
+- **JavaScript (vanilla JS)**: Für interaktive Elemente und die Logik der Quizfragen.
+- **Bootstrap 5**: Für das Styling und die Benutzeroberfläche.
+- **jsPDF**: Zum Erstellen und Downloaden der Bestätigungs-PDF.
+- **Canvas**: Für das Unterschriftenfeld.
+
+---
+
 ## 🔄 Versionierung
 
 Letzte Aktualisierung: **April 2025**  
