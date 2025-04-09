@@ -498,16 +498,30 @@
               <label for="confirmation-date" class="form-label">Bestätigungsdatum</label>
               <input type="date" class="form-control" id="confirmation-date" required>
             </div>
-  
-            <div class="form-check mb-3">
-              <input type="checkbox" class="form-check-input" id="understood" required>
-              <label class="form-check-label" for="understood">Ich habe die Anweisungen gelesen und verstanden.</label>
-            </div>
-  
+            
+              <!-- Erscheinungsbild-Dokumentation -->
             <div class="mb-3">
+              <label for="erscheinungsbild" class="form-label fw-bold">
+                Erscheinungsbild der eingewiesenen Person:
+              </label>
+              <textarea class="form-control" id="erscheinungsbild" rows="3" placeholder="Hier wird das äußere Erscheinungsbild dokumentiert – z. B. gepflegte Kleidung, sauberes Auftreten etc."></textarea>
+            </div>
+           
+            <div class="mb-3">
+              <hr>
+              <p><strong>Datenschutzhinweis:</strong><br>
+              Mit seiner Unterschrift erklärt sich der Unterzeichner ausdrücklich damit einverstanden, dass seine personenbezogenen Daten zum Zwecke der internen Dokumentation, Schulungsnachweises und Kommunikation in einem privaten Cloud-Dienst gespeichert und verarbeitet werden. Die Speicherung erfolgt unter Beachtung der geltenden datenschutzrechtlichen Bestimmungen, insbesondere der DSGVO.<br>
+              <a href="#" data-bs-toggle="modal" data-bs-target="#datenschutzModal">Vollständige Datenschutzerklärung anzeigen</a>
+              </p>
+
               <label class="form-label">Unterschrift (mit Maus oder Finger)</label>
               <canvas id="signature-pad" width="600" height="200" class="border" style="border: 1px solid #ccc; width: 100%;"></canvas>
               <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="clearSignature()">Unterschrift löschen</button>
+            </div>
+
+            <div class="form-check mb-3">
+              <input type="checkbox" class="form-check-input" id="understood" required>
+              <label class="form-check-label" for="understood">Ich habe die Anweisungen gelesen und verstanden.</label>
             </div>
   
             <button type="submit" class="btn btn-success mt-3">Bestätigen</button>
@@ -517,8 +531,45 @@
       </div>
     </div>
   </div>
+
+  <!-- Datenschutz Modal -->
+<div class="modal fade" id="datenschutzModal" tabindex="-1" aria-labelledby="datenschutzModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="datenschutzModalLabel">Datenschutzerklärung</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Verantwortlicher:</strong><br>Imkerei Mustermann, Musterstraße 1, 12345 Musterstadt</p>
+
+        <p><strong>Zweck der Datenverarbeitung:</strong><br>
+        Ihre personenbezogenen Daten (Name, Unterschrift, Schulungsteilnahme) werden zum Zwecke der internen Schulungsdokumentation, Qualitätskontrolle sowie der Einhaltung gesetzlicher Nachweispflichten gespeichert.</p>
+
+        <p><strong>Rechtsgrundlage:</strong><br>
+        Ihre Einwilligung gemäß Art. 6 Abs. 1 lit. a DSGVO.</p>
+
+        <p><strong>Speicherdauer:</strong><br>
+        Die Daten werden für die Dauer der Betriebszugehörigkeit und darüber hinaus für maximal 3 Jahre gespeichert, sofern keine längeren gesetzlichen Aufbewahrungspflichten bestehen.</p>
+
+        <p><strong>Empfänger:</strong><br>
+        Der Zugriff erfolgt ausschließlich durch autorisierte Personen innerhalb des Unternehmens. Die Daten werden in einer geschützten privaten Cloud gespeichert.</p>
+
+        <p><strong>Ihre Rechte:</strong><br>
+        Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerruf Ihrer Einwilligung. Wenden Sie sich dazu an: <a href="mailto:datenschutz@imkerei.de">datenschutz@imkerei.de</a></p>
+      </div>
+    </div>
+  </div>
+</div>
   
-  
+<script>
+  const datenschutzModal = document.getElementById('datenschutzModal');
+  datenschutzModal.addEventListener('hidden.bs.modal', function () {
+    const instructionModal = new bootstrap.Modal(document.getElementById('instructionModal'));
+    instructionModal.show();
+  });
+</script>
+ 
 
 <script>
     document.getElementById("confirmation-form").addEventListener("submit", async function(e) {
