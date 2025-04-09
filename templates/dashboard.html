@@ -470,32 +470,32 @@
           <!-- Formular für Bestätigung -->
           <form id="confirmation-form">
             <div class="mb-3">
-              <label for="instructor-name" class="form-label">Durchgeführt von</label>
+              <label for="instructor-name" class="form-label fw-bold">Durchgeführt von</label>
               <input type="text" class="form-control" id="instructor-name" placeholder="z. B. Hygienebeauftragter" required>
             </div>
             
             <div class="mb-3">
-              <label for="instruction-version" class="form-label">Version der Anweisung</label>
+              <label for="instruction-version" class="form-label fw-bold">Version der Anweisung</label>
               <input type="text" class="form-control" id="instruction-version" placeholder="z. B. Version 1.2, Stand 03/2024" required>
             </div>
             
             <div class="mb-3">
-              <label for="employee-role" class="form-label">Position/Funktion der angewiesenen Person</label>
+              <label for="employee-role" class="form-label fw-bold">Position/Funktion der angewiesenen Person</label>
               <input type="text" class="form-control" id="employee-role" placeholder="z. B. Produktionsmitarbeiter" required>
             </div>
             
             <div class="mb-3">
-              <label for="employee-fullname" class="form-label">Vollständiger Name des Mitarbeiters</label>
+              <label for="employee-fullname" class="form-label fw-bold">Vollständiger Name des Mitarbeiters</label>
               <input type="text" class="form-control" id="employee-fullname" placeholder="Vorname Nachname" required>
             </div>
   
             <div class="mb-3">
-              <label for="employee-id" class="form-label">Betriebsnummer</label>
+              <label for="employee-id" class="form-label fw-bold">Betriebsnummer</label>
               <input type="text" class="form-control" id="employee-id" placeholder="z. B. 12345678" required>
             </div>
   
             <div class="mb-3">
-              <label for="confirmation-date" class="form-label">Bestätigungsdatum</label>
+              <label for="confirmation-date" class="form-label fw-bold">Bestätigungsdatum</label>
               <input type="date" class="form-control" id="confirmation-date" required>
             </div>
             
@@ -514,14 +514,14 @@
               <a href="#" data-bs-toggle="modal" data-bs-target="#datenschutzModal">Vollständige Datenschutzerklärung anzeigen</a>
               </p>
 
-              <label class="form-label">Unterschrift (mit Maus oder Finger)</label>
+              <label class="form-label fw-bold">Unterschrift (mit Maus oder Finger)</label>
               <canvas id="signature-pad" width="600" height="200" class="border" style="border: 1px solid #ccc; width: 100%;"></canvas>
               <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="clearSignature()">Unterschrift löschen</button>
             </div>
 
             <div class="form-check mb-3">
               <input type="checkbox" class="form-check-input" id="understood" required>
-              <label class="form-check-label" for="understood">Ich habe die Anweisungen gelesen und verstanden.</label>
+              <label class="form-check-label fw-bold" for="understood">Ich habe die Anweisungen gelesen und verstanden.</label>
             </div>
   
             <button type="submit" class="btn btn-success mt-3">Bestätigen</button>
