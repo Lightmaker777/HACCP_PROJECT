@@ -500,13 +500,82 @@
             </div>
             
               <!-- Erscheinungsbild-Dokumentation -->
-            <div class="mb-3">
-              <label for="erscheinungsbild" class="form-label fw-bold">
-                Erscheinungsbild der eingewiesenen Person:
+              <div class="mb-3">
+                <label class="form-label fw-bold">Bewertung des äußeren Erscheinungsbilds:</label>
+                <p>Wie war der äußere Eindruck des Mitarbeiters / der Mitarbeiterin?<br>(Bitte eine Option auswählen)</p>
+
+                <!-- Hauptbewertung -->
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="erscheinungsbildRadio" id="gepflegt" value="gepflegt" onclick="toggleNegativeDetails(false)">
+                  <label class="form-check-label" for="gepflegt">
+                    Gepflegt und angemessen
+                  </label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="erscheinungsbildRadio" id="neutral" value="neutral" onclick="toggleNegativeDetails(false)">
+                  <label class="form-check-label" for="neutral">
+                    Neutral / unauffällig
+                  </label>
+                </div>
+
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="erscheinungsbildRadio" id="ungepflegt" value="ungepflegt" onclick="toggleNegativeDetails(true)">
+                  <label class="form-check-label" for="ungepflegt">
+                    Ungepflegt oder unangemessen <span class="text-muted">(bei Auswahl bitte unten kommentieren)</span>
+                  </label>
+                </div>
+
+          <!-- Unterauswahl bei negativer Bewertung (Mehrfachauswahl) -->
+  <div id="negativeDetails" class="mt-3" style="display: none;">
+    <p><strong>Bitte wählen Sie alle zutreffenden Auffälligkeiten:</strong></p>
+
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="chkAlkohol" value="Alkoholgeruch">
+      <label class="form-check-label" for="chkAlkohol">Alkoholgeruch</label>
+    </div>
+
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="chkKleidung" value="Unangemessene Kleidung">
+      <label class="form-check-label" for="chkKleidung">Unangemessene Kleidung</label>
+    </div>
+
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="chkHygiene" value="Mangelhafte Hygiene">
+      <label class="form-check-label" for="chkHygiene">Mangelhafte Körperpflege / Hygiene</label>
+    </div>
+
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="chkVerhalten" value="Unangemessenes Verhalten">
+      <label class="form-check-label" for="chkVerhalten">Unangemessenes oder respektloses Verhalten</label>
+    </div>
+
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="chkDrogen" value="Verdacht auf Drogenkonsum">
+      <label class="form-check-label" for="chkDrogen">Verdacht auf Drogenkonsum</label>
+    </div>
+
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="chkSonstiges" value="Sonstiges">
+      <label class="form-check-label" for="chkSonstiges">Sonstiges (bitte unten beschreiben)</label>
+    </div>
+
+            <!-- Freitextfeld -->
+            <div class="mt-3">
+              <label for="erscheinungKommentar" class="form-label fw-semibold">
+                Detaillierte Beschreibung (optional):
               </label>
-              <textarea class="form-control" id="erscheinungsbild" rows="3" placeholder="Hier wird das äußere Erscheinungsbild dokumentiert – z. B. gepflegte Kleidung, sauberes Auftreten etc."></textarea>
+              <textarea class="form-control" id="erscheinungKommentar" rows="3" placeholder="z. B. starke Geruchsbelästigung, unangemessene Sprache etc."></textarea>
             </div>
-           
+          </div>
+        </div>
+           <!-- JS zum Anzeigen/Verstecken -->
+          <script>
+            function toggleNegativeDetails(show) {
+              const details = document.getElementById('negativeDetails');
+              details.style.display = show ? 'block' : 'none';
+            }
+          </script>
             <div class="mb-3">
               <hr>
               <p><strong>Datenschutzhinweis:</strong><br>
