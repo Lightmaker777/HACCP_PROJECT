@@ -1,7 +1,7 @@
 # app.py
 from flask import Flask, render_template, request, redirect, url_for, session, Response, send_file, flash, jsonify
 import bcrypt
-import openpyxl 
+import openpyxl
 from io import BytesIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -15,7 +15,26 @@ from flask_admin.contrib.sqla import ModelView
 # Initialize SQLAlchemy
 db = SQLAlchemy()
 
+# Initialize the Flask application
+app = Flask(__name__)
 
+# Datenbank-Verbindung
+app.config.update(
+    SECRET_KEY='RRk7wim15aTobpzfqxvYMmU98weRjFGb',  # Den Schlüssel solltest du sicher verwahren
+    # Hier greifen wir auf die Umgebungsvariable 'DATABASE_URL' zu, die Render bereitstellt.
+    SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL', 'sqlite:///haccp.db'),  # Standardwert für lokale Entwicklung (SQLite)
+    SQLALCHEMY_TRACK_MODIFICATIONS=False,
+    SQLALCHEMY_POOL_SIZE=10,
+    SQLALCHEMY_POOL_TIMEOUT=30,
+    SQLALCHEMY_POOL_RECYCLE=1800,
+    SQLALCHEMY_MAX_OVERFLOW=20
+)
+
+# Initialize SQLAlchemy with the app (nur einmal erforderlich)
+db.init_app(app)
+
+# Initialize Migrate
+migrate = Migrate(app, db)
 
 # Define Models
 class User(db.Model):
@@ -98,21 +117,6 @@ class Confirmation(db.Model):
     # Foreign key
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True)
 
-# Initialize the Flask application
-app = Flask(__name__)
-# Datenbank-Verbindung
-app.config.update(
-    SECRET_KEY='your_secret_key',  # Den Schlüssel solltest du sicher verwahren
-    SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL', 'sqlite:///haccp.db'),  # Hier greifen wir auf die Umgebungsvariable zu
-    SQLALCHEMY_TRACK_MODIFICATIONS=False,
-    SQLALCHEMY_POOL_SIZE=10,
-    SQLALCHEMY_POOL_TIMEOUT=30,
-    SQLALCHEMY_POOL_RECYCLE=1800,
-    SQLALCHEMY_MAX_OVERFLOW=20
-)
-
-# Initialize SQLAlchemy with the app
-db.init_app(app)
 migrate = Migrate(app, db)
 
 # Password handling functions
