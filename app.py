@@ -8,9 +8,12 @@ from flask_migrate import Migrate
 from sqlalchemy import func
 from datetime import datetime
 from sqlalchemy.orm import validates
+import os
 
 # Initialize SQLAlchemy
 db = SQLAlchemy()
+
+
 
 # Define Models
 class User(db.Model):
@@ -95,9 +98,10 @@ class Confirmation(db.Model):
 
 # Initialize the Flask application
 app = Flask(__name__)
+# Datenbank-Verbindung
 app.config.update(
-    SECRET_KEY='your_secret_key',  # Consider using environment variables for production
-    SQLALCHEMY_DATABASE_URI='sqlite:///haccp.db',
+    SECRET_KEY='your_secret_key',  # Den Schlüssel solltest du sicher verwahren
+    SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL', 'sqlite:///haccp.db'),  # Hier greifen wir auf die Umgebungsvariable zu
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
     SQLALCHEMY_POOL_SIZE=10,
     SQLALCHEMY_POOL_TIMEOUT=30,
