@@ -9,6 +9,8 @@ from sqlalchemy import func
 from datetime import datetime
 from sqlalchemy.orm import validates
 import os
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
 
 # Initialize SQLAlchemy
 db = SQLAlchemy()
@@ -636,6 +638,16 @@ def manage_categories():
     
     categories = ProductCategory.query.all()
     return render_template("manage_categories.html", categories=categories)
+
+# Admin initialisieren
+admin = Admin(app, name='HACCP Admin', template_mode='bootstrap4')
+
+# Models registrieren
+admin.add_view(ModelView(User, db.session))
+admin.add_view(ModelView(Product, db.session))
+admin.add_view(ModelView(ProductCategory, db.session))
+admin.add_view(ModelView(SecurityCheck, db.session))
+admin.add_view(ModelView(Confirmation, db.session))
 
 if __name__ == "__main__":
     # Initialize database before running the app
