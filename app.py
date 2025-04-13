@@ -185,6 +185,10 @@ def create_product_categories():
         db.session.rollback()
         print(f"Error creating product categories: {str(e)}")
 
+# Direkt nach der Definition aller Models und vor den Routen
+with app.app_context():
+    initialize()
+
 # Authentication handling
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -719,6 +723,12 @@ admin.add_view(ModelView(Product, db.session))
 admin.add_view(ModelView(ProductCategory, db.session))
 admin.add_view(ModelView(SecurityCheck, db.session))
 admin.add_view(ModelView(Confirmation, db.session))
+
+@app.context_processor
+def utility_processor():
+    return {
+        'hasattr': hasattr
+    }
 
 # Error handlers
 @app.errorhandler(500)

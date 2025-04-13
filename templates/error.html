@@ -63,8 +63,7 @@
             
             {% if error %}
             <div class="error-details text-left">
-                <strong>Fehlercode:</strong> {{ error.code if hasattr(error, 'code') else '500' }}<br>
-                <strong>Fehlertyp:</strong> {{ error.__class__.__name__ }}<br>
+                <strong>Fehlercode:</strong> {{ error.code if error is defined and error.code is defined else '500' }}<br>                <strong>Fehlertyp:</strong> {{ error.__class__.__name__ }}<br>
                 <strong>Meldung:</strong> {{ error }}
             </div>
             {% endif %}
