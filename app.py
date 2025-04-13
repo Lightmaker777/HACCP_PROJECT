@@ -9,8 +9,15 @@ from sqlalchemy import func
 from datetime import datetime
 from sqlalchemy.orm import validates
 import os
+import re
+import logging
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
+
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger('sqlalchemy.engine')
+logger.setLevel(logging.INFO)
 
 # Initialize SQLAlchemy
 db = SQLAlchemy()
@@ -18,16 +25,21 @@ db = SQLAlchemy()
 # Initialize the Flask application
 app = Flask(__name__)
 
+# Fix for Render PostgreSQL connection strings
+database_url = os.environ.get('DATABASE_URL', 'sqlite:///haccp.db')
+if database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+
 # Datenbank-Verbindung
 app.config.update(
     SECRET_KEY='RRk7wim15aTobpzfqxvYMmU98weRjFGb',  # Den Schlüssel solltest du sicher verwahren
-    # Hier greifen wir auf die Umgebungsvariable 'DATABASE_URL' zu, die Render bereitstellt.
-    SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL', 'sqlite:///haccp.db'),  # Standardwert für lokale Entwicklung (SQLite)
+    SQLALCHEMY_DATABASE_URI=database_url,  # Use the fixed URL
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
-    SQLALCHEMY_POOL_SIZE=10,
+    SQLALCHEMY_POOL_SIZE=5,  # Reduced from 10
     SQLALCHEMY_POOL_TIMEOUT=30,
     SQLALCHEMY_POOL_RECYCLE=1800,
-    SQLALCHEMY_MAX_OVERFLOW=20
+    SQLALCHEMY_MAX_OVERFLOW=10,  # Reduced from 20
+    SQLALCHEMY_ECHO=True  # Enable SQL query logging
 )
 
 # Initialize SQLAlchemy with the app (nur einmal erforderlich)
@@ -128,38 +140,50 @@ def check_password(stored_password, password):
 
 # Database initialization
 def initialize():
-    with app.app_context():
-        db.create_all()  # Creates tables if they don't exist
-        create_default_admin()
-        create_product_categories()
+    try:
+        with app.app_context():
+            db.create_all()  # Creates tables if they don't exist
+            create_default_admin()
+            create_product_categories()
+    except Exception as e:
+        print(f"Database initialization error: {str(e)}")
+        # Continue anyway, don't crash the app
 
 def create_default_admin():
-    admin = User.query.filter_by(username='admin').first()
-    if not admin:
-        hashed_password = hash_password('admin123')
-        admin = User(username='admin', password=hashed_password, role='admin')
-        db.session.add(admin)
-        db.session.commit()
+    try:
+        admin = User.query.filter_by(username='admin').first()
+        if not admin:
+            hashed_password = hash_password('admin123')
+            admin = User(username='admin', password=hashed_password, role='admin')
+            db.session.add(admin)
+            db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error creating default admin: {str(e)}")
         
 def create_product_categories():
-    categories = [
-        {"name": "Fleisch", "min_temp": 2, "max_temp": 7, "risk_level": "hoch"},
-        {"name": "Milch", "min_temp": 0, "max_temp": 4, "risk_level": "hoch"},
-        {"name": "Gemüse", "min_temp": 4, "max_temp": 12, "risk_level": "mittel"},
-        {"name": "Honig", "min_temp": -99, "max_temp": 99, "risk_level": "niedrig"}
-    ]
-    
-    for cat_data in categories:
-        if not ProductCategory.query.filter_by(name=cat_data["name"]).first():
-            category = ProductCategory(
-                name=cat_data["name"],
-                min_temp=cat_data["min_temp"],
-                max_temp=cat_data["max_temp"],
-                risk_level=cat_data["risk_level"]
-            )
-            db.session.add(category)
-    
-    db.session.commit()
+    try:
+        categories = [
+            {"name": "Fleisch", "min_temp": 2, "max_temp": 7, "risk_level": "hoch"},
+            {"name": "Milch", "min_temp": 0, "max_temp": 4, "risk_level": "hoch"},
+            {"name": "Gemüse", "min_temp": 4, "max_temp": 12, "risk_level": "mittel"},
+            {"name": "Honig", "min_temp": -99, "max_temp": 99, "risk_level": "niedrig"}
+        ]
+        
+        for cat_data in categories:
+            if not ProductCategory.query.filter_by(name=cat_data["name"]).first():
+                category = ProductCategory(
+                    name=cat_data["name"],
+                    min_temp=cat_data["min_temp"],
+                    max_temp=cat_data["max_temp"],
+                    risk_level=cat_data["risk_level"]
+                )
+                db.session.add(category)
+        
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error creating product categories: {str(e)}")
 
 # Authentication handling
 @app.route('/register', methods=['GET', 'POST'])
@@ -198,15 +222,18 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        user = User.query.filter_by(username=username).first()
-        
-        if user and check_password(user.password, password):
-            session['user'] = user.username
-            session['user_id'] = user.id
-            session['role'] = user.role
-            return redirect(url_for('dashboard'))
-        else:
-            flash("Ungültige Anmeldedaten!", "danger")
+        try:
+            user = User.query.filter_by(username=username).first()
+            
+            if user and check_password(user.password, password):
+                session['user'] = user.username
+                session['user_id'] = user.id
+                session['role'] = user.role
+                return redirect(url_for('dashboard'))
+            else:
+                flash("Ungültige Anmeldedaten!", "danger")
+        except Exception as e:
+            flash(f"Fehler bei der Anmeldung: {str(e)}", "danger")
     
     return render_template('login.html')
 
@@ -215,15 +242,22 @@ def dashboard():
     if 'user' not in session:
         return redirect(url_for('login'))
     
-    # Get some stats for the dashboard
-    product_count = Product.query.count()
-    warning_count = Product.query.filter_by(status="WARNUNG").count()
-    confirmation_count = Confirmation.query.count()
-    
-    return render_template('dashboard.html', 
-                          product_count=product_count, 
-                          warning_count=warning_count,
-                          confirmation_count=confirmation_count)
+    try:
+        # Get some stats for the dashboard
+        product_count = Product.query.count()
+        warning_count = Product.query.filter_by(status="WARNUNG").count()
+        confirmation_count = Confirmation.query.count()
+        
+        return render_template('dashboard.html', 
+                              product_count=product_count, 
+                              warning_count=warning_count,
+                              confirmation_count=confirmation_count)
+    except Exception as e:
+        flash(f"Fehler beim Laden des Dashboards: {str(e)}", "danger")
+        return render_template('dashboard.html', 
+                             product_count=0, 
+                             warning_count=0,
+                             confirmation_count=0)
 
 @app.route("/logout")
 def logout():
@@ -260,36 +294,39 @@ def index():
         temperatur = float(request.form["temperatur"])
         lagerort = request.form["lagerort"]
         
-        # Get the product category
-        category = ProductCategory.query.filter_by(name=produkt).first()
-        
-        status = "OK"
-        risikostufe = "unbekannt"
-        
-        if category:
-            risikostufe = category.risk_level
-            if temperatur < category.min_temp or temperatur > category.max_temp:
-                status = "WARNUNG"
-        
         try:
-            # Create new product
-            new_product = Product(
-                produkt=produkt,
-                temperatur=temperatur,
-                lagerort=lagerort,
-                status=status,
-                risikostufe=risikostufe,
-                user_id=session.get('user_id'),
-                category_id=category.id if category else None
-            )
-            db.session.add(new_product)
-            db.session.commit()
+            # Get the product category
+            category = ProductCategory.query.filter_by(name=produkt).first()
             
-            # Redirect to confirmation page
-            return redirect(url_for('confirmation', produkt=produkt, temperatur=temperatur, status=status, risikostufe=risikostufe))
+            status = "OK"
+            risikostufe = "unbekannt"
+            
+            if category:
+                risikostufe = category.risk_level
+                if temperatur < category.min_temp or temperatur > category.max_temp:
+                    status = "WARNUNG"
+            
+            try:
+                # Create new product
+                new_product = Product(
+                    produkt=produkt,
+                    temperatur=temperatur,
+                    lagerort=lagerort,
+                    status=status,
+                    risikostufe=risikostufe,
+                    user_id=session.get('user_id'),
+                    category_id=category.id if category else None
+                )
+                db.session.add(new_product)
+                db.session.commit()
+                
+                # Redirect to confirmation page
+                return redirect(url_for('confirmation', produkt=produkt, temperatur=temperatur, status=status, risikostufe=risikostufe))
+            except Exception as e:
+                db.session.rollback()
+                flash(f"Fehler beim Speichern: {str(e)}", "danger")
         except Exception as e:
-            db.session.rollback()
-            flash(f"Fehler beim Speichern: {str(e)}", "danger")
+            flash(f"Fehler bei der Verarbeitung: {str(e)}", "danger")
     
     # Get product categories for dropdown
     categories = ProductCategory.query.all()
@@ -339,55 +376,65 @@ def confirmations():
     if 'user' not in session:
         return redirect(url_for('login'))
 
-    confirmations = Confirmation.query.order_by(Confirmation.created_at.desc()).all()
-    return render_template("confirmations.html", rows=confirmations)
+    try:
+        confirmations = Confirmation.query.order_by(Confirmation.created_at.desc()).all()
+        return render_template("confirmations.html", rows=confirmations)
+    except Exception as e:
+        flash(f"Fehler beim Laden der Bestätigungen: {str(e)}", "danger")
+        return render_template("confirmations.html", rows=[])
 
 @app.route("/produkte", methods=["GET", "POST"])
 def produkte():
     if 'user' not in session:
         return redirect(url_for('login'))
 
-    products = Product.query.order_by(Product.created_at.desc()).all()
-    
-    if request.method == "POST":
-        produkt = request.form["produkt"]
-        temperatur = float(request.form["temperatur"])
-        lagerort = request.form["lagerort"]
+    try:
+        products = Product.query.order_by(Product.created_at.desc()).all()
         
-        # Get the product category
-        category = ProductCategory.query.filter_by(name=produkt).first()
-        
-        status = "OK"
-        risikostufe = "unbekannt"
-        
-        if category:
-            risikostufe = category.risk_level
-            if temperatur < category.min_temp or temperatur > category.max_temp:
-                status = "WARNUNG"
-        
-        try:
-            # Create new product
-            new_product = Product(
-                produkt=produkt,
-                temperatur=temperatur,
-                lagerort=lagerort,
-                status=status,
-                risikostufe=risikostufe,
-                user_id=session.get('user_id'),
-                category_id=category.id if category else None
-            )
-            db.session.add(new_product)
-            db.session.commit()
+        if request.method == "POST":
+            produkt = request.form["produkt"]
+            temperatur = float(request.form["temperatur"])
+            lagerort = request.form["lagerort"]
             
-            flash(f"{produkt} erfolgreich validiert!", "success")
-            return redirect(url_for('produkte'))
-        except Exception as e:
-            db.session.rollback()
-            flash(f"Fehler beim Speichern: {str(e)}", "danger")
+            # Get the product category
+            category = ProductCategory.query.filter_by(name=produkt).first()
+            
+            status = "OK"
+            risikostufe = "unbekannt"
+            
+            if category:
+                risikostufe = category.risk_level
+                if temperatur < category.min_temp or temperatur > category.max_temp:
+                    status = "WARNUNG"
+            
+            try:
+                # Create new product
+                new_product = Product(
+                    produkt=produkt,
+                    temperatur=temperatur,
+                    lagerort=lagerort,
+                    status=status,
+                    risikostufe=risikostufe,
+                    user_id=session.get('user_id'),
+                    category_id=category.id if category else None
+                )
+                db.session.add(new_product)
+                db.session.commit()
+                
+                flash(f"{produkt} erfolgreich validiert!", "success")
+                return redirect(url_for('produkte'))
+            except Exception as e:
+                db.session.rollback()
+                flash(f"Fehler beim Speichern: {str(e)}", "danger")
 
-    # Get product categories for dropdown
-    categories = ProductCategory.query.all()
-    return render_template("produkte.html", rows=products, categories=categories)
+        # Get product categories for dropdown
+        categories = ProductCategory.query.all()
+        return render_template("produkte.html", rows=products, categories=categories)
+    except Exception as e:
+        flash(f"Fehler beim Laden der Produktdaten: {str(e)}", "danger")
+        # Get product categories for dropdown
+        categories = ProductCategory.query.all()
+        return render_template("produkte.html", rows=[], categories=categories)
 
 @app.route("/produkte_validierung", methods=["GET", "POST"])
 def produkte_validierung():
@@ -399,36 +446,39 @@ def produkte_validierung():
         temperatur = float(request.form["temperatur"])
         lagerort = request.form["lagerort"]
         
-        # Get the product category
-        category = ProductCategory.query.filter_by(name=produkt).first()
-        
-        status = "OK"
-        risikostufe = "unbekannt"
-        
-        if category:
-            risikostufe = category.risk_level
-            if temperatur < category.min_temp or temperatur > category.max_temp:
-                status = "WARNUNG"
-        
         try:
-            # Create new product
-            new_product = Product(
-                produkt=produkt,
-                temperatur=temperatur,
-                lagerort=lagerort,
-                status=status,
-                risikostufe=risikostufe,
-                user_id=session.get('user_id'),
-                category_id=category.id if category else None
-            )
-            db.session.add(new_product)
-            db.session.commit()
+            # Get the product category
+            category = ProductCategory.query.filter_by(name=produkt).first()
             
-            flash(f"Produkt {produkt} erfolgreich validiert!", "success")
-            return redirect(url_for('produkte_validierung'))
+            status = "OK"
+            risikostufe = "unbekannt"
+            
+            if category:
+                risikostufe = category.risk_level
+                if temperatur < category.min_temp or temperatur > category.max_temp:
+                    status = "WARNUNG"
+            
+            try:
+                # Create new product
+                new_product = Product(
+                    produkt=produkt,
+                    temperatur=temperatur,
+                    lagerort=lagerort,
+                    status=status,
+                    risikostufe=risikostufe,
+                    user_id=session.get('user_id'),
+                    category_id=category.id if category else None
+                )
+                db.session.add(new_product)
+                db.session.commit()
+                
+                flash(f"Produkt {produkt} erfolgreich validiert!", "success")
+                return redirect(url_for('produkte_validierung'))
+            except Exception as e:
+                db.session.rollback()
+                flash(f"Fehler beim Speichern: {str(e)}", "danger")
         except Exception as e:
-            db.session.rollback()
-            flash(f"Fehler beim Speichern: {str(e)}", "danger")
+            flash(f"Fehler bei der Verarbeitung: {str(e)}", "danger")
 
     # Get product categories for dropdown
     categories = ProductCategory.query.all()
@@ -467,50 +517,58 @@ def export_csv():
     if 'user' not in session:
         return redirect(url_for('login'))
     
-    products = Product.query.all()
-    
-    # Create CSV content
-    output = "ID,Produkt,Temperatur,Lagerort,Status,Risikostufe\n"
-    for product in products:
-        output += f"{product.id},{product.produkt},{product.temperatur},{product.lagerort},{product.status},{product.risikostufe}\n"
+    try:
+        products = Product.query.all()
+        
+        # Create CSV content
+        output = "ID,Produkt,Temperatur,Lagerort,Status,Risikostufe\n"
+        for product in products:
+            output += f"{product.id},{product.produkt},{product.temperatur},{product.lagerort},{product.status},{product.risikostufe}\n"
 
-    return Response(
-        output,
-        mimetype="text/csv",
-        headers={"Content-Disposition": "attachment;filename=produkte.csv"}
-    )
+        return Response(
+            output,
+            mimetype="text/csv",
+            headers={"Content-Disposition": "attachment;filename=produkte.csv"}
+        )
+    except Exception as e:
+        flash(f"Fehler beim Export: {str(e)}", "danger")
+        return redirect(url_for('produkte'))
 
 @app.route("/export_excel")
 def export_excel():
     if 'user' not in session:
         return redirect(url_for('login'))
     
-    products = Product.query.all()
-    
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.append(["ID", "Produkt", "Temperatur", "Lagerort", "Status", "Risikostufe"])
+    try:
+        products = Product.query.all()
+        
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.append(["ID", "Produkt", "Temperatur", "Lagerort", "Status", "Risikostufe"])
 
-    for product in products:
-        ws.append([
-            product.id, 
-            product.produkt, 
-            product.temperatur, 
-            product.lagerort, 
-            product.status, 
-            product.risikostufe
-        ])
+        for product in products:
+            ws.append([
+                product.id, 
+                product.produkt, 
+                product.temperatur, 
+                product.lagerort, 
+                product.status, 
+                product.risikostufe
+            ])
 
-    output = BytesIO()
-    wb.save(output)
-    output.seek(0)
+        output = BytesIO()
+        wb.save(output)
+        output.seek(0)
 
-    return send_file(
-        output, 
-        as_attachment=True, 
-        download_name="produkte.xlsx", 
-        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
+        return send_file(
+            output, 
+            as_attachment=True, 
+            download_name="produkte.xlsx", 
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+    except Exception as e:
+        flash(f"Fehler beim Excel-Export: {str(e)}", "danger")
+        return redirect(url_for('produkte'))
 
 # Statistics and reporting
 @app.route("/statistiken")
@@ -518,31 +576,40 @@ def statistiken():
     if 'user' not in session:
         return redirect(url_for('login'))
     
-    # Efficient aggregation using SQLAlchemy
-    avg_temp = db.session.query(func.avg(Product.temperatur)).scalar() or 0
-    
-    warning_count = Product.query.filter_by(status="WARNUNG").count()
-    total_count = Product.query.count()
-    
-    # Products by risk level
-    risk_stats = db.session.query(
-        Product.risikostufe,
-        func.count(Product.id).label('count')
-    ).group_by(Product.risikostufe).all()
-    
-    # Products by category
-    category_stats = db.session.query(
-        ProductCategory.name,
-        func.count(Product.id).label('count')
-    ).join(Product, Product.category_id == ProductCategory.id, isouter=True)\
-     .group_by(ProductCategory.name).all()
-    
-    return render_template("statistiken.html", 
-                          avg_temp=avg_temp, 
-                          warning_count=warning_count, 
-                          total_count=total_count,
-                          risk_stats=risk_stats,
-                          category_stats=category_stats)
+    try:
+        # Efficient aggregation using SQLAlchemy
+        avg_temp = db.session.query(func.avg(Product.temperatur)).scalar() or 0
+        
+        warning_count = Product.query.filter_by(status="WARNUNG").count()
+        total_count = Product.query.count()
+        
+        # Products by risk level
+        risk_stats = db.session.query(
+            Product.risikostufe,
+            func.count(Product.id).label('count')
+        ).group_by(Product.risikostufe).all()
+        
+        # Products by category
+        category_stats = db.session.query(
+            ProductCategory.name,
+            func.count(Product.id).label('count')
+        ).join(Product, Product.category_id == ProductCategory.id, isouter=True)\
+         .group_by(ProductCategory.name).all()
+        
+        return render_template("statistiken.html", 
+                              avg_temp=avg_temp, 
+                              warning_count=warning_count, 
+                              total_count=total_count,
+                              risk_stats=risk_stats,
+                              category_stats=category_stats)
+    except Exception as e:
+        flash(f"Fehler beim Laden der Statistiken: {str(e)}", "danger")
+        return render_template("statistiken.html", 
+                             avg_temp=0, 
+                             warning_count=0, 
+                             total_count=0,
+                             risk_stats=[],
+                             category_stats=[])
 
 # Batch operations example
 @app.route("/admin/bulk_import", methods=["GET", "POST"])
@@ -653,8 +720,17 @@ admin.add_view(ModelView(ProductCategory, db.session))
 admin.add_view(ModelView(SecurityCheck, db.session))
 admin.add_view(ModelView(Confirmation, db.session))
 
+# Error handlers
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()  # Roll back the session in case of error
+    return render_template('error.html', error=error), 500
+
+@app.errorhandler(404)
+def not_found(error):
+    return render_template('error.html', error=error), 404
+
 if __name__ == "__main__":
     # Initialize database before running the app
-    with app.app_context():
-        initialize()
+    initialize()
     app.run(debug=True)

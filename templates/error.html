@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fehler aufgetreten | HACCP System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 40px;
+        }
+        .error-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        .error-icon {
+            font-size: 60px;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        .error-heading {
+            margin-bottom: 20px;
+            color: #343a40;
+        }
+        .error-message {
+            margin-bottom: 30px;
+            color: #6c757d;
+        }
+        .error-details {
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+        .btn-back {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="error-container text-center">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+                <!-- Fallback if Font Awesome isn't available -->
+                <span style="font-size: 60px; display: inline-block;">⚠️</span>
+            </div>
+            
+            <h1 class="error-heading">Ein Fehler ist aufgetreten</h1>
+            
+            <p class="error-message">
+                Entschuldigung für die Unannehmlichkeiten. Beim Bearbeiten Ihrer Anfrage ist ein Fehler aufgetreten.
+                Das System-Team wurde über dieses Problem informiert.
+            </p>
+            
+            {% if error %}
+            <div class="error-details text-left">
+                <strong>Fehlercode:</strong> {{ error.code if hasattr(error, 'code') else '500' }}<br>
+                <strong>Fehlertyp:</strong> {{ error.__class__.__name__ }}<br>
+                <strong>Meldung:</strong> {{ error }}
+            </div>
+            {% endif %}
+            
+            <div class="error-actions">
+                <a href="javascript:history.back()" class="btn btn-secondary btn-back">
+                    <i class="fas fa-arrow-left"></i> Zurück zur vorherigen Seite
+                </a>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                    <i class="fas fa-home"></i> Zum Dashboard
+                </a>
+            </div>
+            
+            <div class="mt-4">
+                <small class="text-muted">
+                    Wenn das Problem weiterhin besteht, kontaktieren Sie bitte den Support.
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</body>
+</html>
